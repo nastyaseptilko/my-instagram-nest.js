@@ -1,7 +1,7 @@
-#Instagram  
+ #Instagram  
  
 ## Description
-###This project is analogous to Instagram. Technologies used: Node.js, Nest.js, MySQL, TypeORM.
+This project is analogous to Instagram. Technologies used: Node.js, Nest.js, MySQL, TypeORM.
 
 ## Installation
 
