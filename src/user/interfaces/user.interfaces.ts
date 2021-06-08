@@ -9,17 +9,17 @@ export type User = {
 };
 
 export type CreateUserPayload = {
-    name: string;
+    name?: string;
     userName: string;
-    webSite: string;
-    bio: string;
+    webSite?: string;
+    bio?: string;
     email: string;
-    password: string;
+    password?: string;
 };
 
 export type UpdateUserPayload = {
-    name: string;
-    userName: string;
-    webSite: string;
-    bio: string;
+    name?: string;
+    userName?: string;
+    webSite?: string;
+    bio?: string;
 };

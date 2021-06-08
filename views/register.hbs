@@ -1,0 +1,43 @@
+<form action="/register" method="post" >
+    <h1 >Register:</h1>
+
+    <div class="form-group ">
+        <input type="text" name="name" placeholder="Enter your name, please" class="form-control">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">@</span>
+        <input type="text" name="userName" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+    </div>
+    <div class="form-group ">
+         <input type="text" name="webSite" placeholder="Enter your web site, please" class="form-control">
+    </div>
+    <div class="form-group ">
+        <input type="text" name="bio" placeholder="Enter your bio, please" class="form-control">
+    </div>
+    <div class="form-group">
+        <input type="email" name="email" class="form-control" placeholder="Enter your email, please" aria-describedby="emailHelp" required>
+        <small class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <div class="form-group">
+        <input type="password" name="password" placeholder="Enter your password,please" class="form-control" required>
+    </div>
+
+    {{#if  error}}
+        <div class="error">
+            <div class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+        </div>
+    {{/if}}
+
+    {{#if  errorIsUser}}
+        <div class="error">
+            <div class="alert alert-danger" role="alert">
+                {{errorIsUser}}
+            </div>
+        </div>
+    {{/if}}
+
+    <button type="submit" id="submit" class="btn btn-outline-info">Register</button>
+    <button type="button" style="margin-left: 15px" class="btn btn-outline-dark" onclick="history.back();">Back</button>
+</form>

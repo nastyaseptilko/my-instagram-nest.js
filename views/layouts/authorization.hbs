@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link rel="icon" href="img/insta-logo.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/authorization.css">
+</head>
+<body>
+
+{{#if registerLink}}
+<a href="/register" class="flex-sm-fill text-sm-center nav-link" style="font-size: 2rem"> Register </a>
+{{else}}
+<a href="/login" class="flex-sm-fill text-sm-center nav-link" style="font-size: 2rem"> Login </a>
+{{/if}}
+
+<div>
+    {{{body}}}
+</div>
+
+</body>
+</html>
