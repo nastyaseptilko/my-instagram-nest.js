@@ -7,7 +7,7 @@
 .env
 
 # File for DB configuration
-.ormconfig.json
+ormconfig.json
 
 # Logs
 logs
