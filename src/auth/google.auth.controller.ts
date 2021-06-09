@@ -1,12 +1,10 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/user/user.service';
-import {
-    AuthenticatedRequestViaGoogle,
-    GoogleLoginResult,
-} from 'src/auth/interfaces/auth.interfaces';
+import { GoogleLoginResult } from 'src/auth/interfaces/auth.interfaces';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedRequestViaGoogle } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 
 @ApiTags('Google auth controller')
 @Controller('/auth/google')

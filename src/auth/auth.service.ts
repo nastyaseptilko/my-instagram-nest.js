@@ -10,8 +10,9 @@ export class AuthService {
 
     async hashPassword(createUserDto: CreateUserPayload): Promise<string> {
         const saltOrRounds = 10;
+        const salt = await bcrypt.genSalt(saltOrRounds);
 
-        return await bcrypt.hash(createUserDto.password, saltOrRounds);
+        return await bcrypt.hash(createUserDto.password, salt);
     }
 
     async verifyPassword(loginUserDto: LoginUserDto): Promise<User | null> {

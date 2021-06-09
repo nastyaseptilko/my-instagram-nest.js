@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link rel="icon" href="/img/insta-logo.png">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+
+<div>
+    {{{body}}}
+</div>
+<script>
+    function updateProfile(userId) {
+        let options = {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: document.getElementById(`name-${userId}`).value,
+                userName: document.getElementById(`userName-${userId}`).value,
+                webSite: document.getElementById(`webSite-${userId}`).value,
+                bio: document.getElementById(`bio-${userId}`).value
+            }),
+        };
+        fetch(`/api/profile/${userId}`, options)
+            .then(response => response);
+    }
+</script>
+</body>
+</html>

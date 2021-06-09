@@ -5,6 +5,7 @@ import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { HomeController } from 'src/home/home.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import { PhotoModule } from 'src/photo/photo.module';
 
 @Module({
     imports: [
@@ -14,6 +15,7 @@ import { AuthMiddleware } from 'src/middlewares/auth.middleware';
         TypeOrmModule.forRoot(),
         UserModule,
         AuthModule,
+        PhotoModule,
     ],
     controllers: [HomeController],
 })

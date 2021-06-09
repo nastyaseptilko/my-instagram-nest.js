@@ -1,0 +1,53 @@
+<div style='overflow-y: hidden; float: left; '>
+    <div class="card border-info mb-3" style="max-width: 20rem; margin-left: 5%">
+        <div class="card-header">{{user.userName}}</div>
+        <div class="card-body">
+            <h5 class="card-title">{{user.name}}</h5>
+            <p class="card-text">{{user.webSite}}</p>
+            <p class="card-text">{{user.bio}}</p>
+        </div>
+    </div>
+
+    <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
+        <h6>Edit information about profile:</h6>
+        <div class="form-group ">
+            <span>Name:</span>
+            <input type="text" name="name" id="name-{{user.id}}" value="{{user.name}}" class="form-control">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">@</span>
+            <input type="text" name="userName" id="userName-{{user.id}}" value="{{user.userName}}" class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="form-group ">
+            <span>Web site:</span>
+            <input type="text" name="webSite" id="webSite-{{user.id}}" value="{{user.webSite}}"  class="form-control">
+        </div>
+        <div class="form-group ">
+            <span>BIO:</span>
+            <input type="text" name="bio" id="bio-{{user.id}}" value="{{user.bio}}" class="form-control">
+        </div>
+
+        <button type="submit" onclick="updateProfile({{user.id}})" id="submit" class="btn btn-outline-info">Save</button>
+        <button type="button"  class="btn btn-outline-dark" onclick="history.back();">Back</button>
+    </div>
+
+</div>
+
+
+{{#if  message}}
+    <div class="error">
+        <div class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
+    </div>
+{{/if}}
+
+<div style='overflow-y: scroll; margin-top: 1rem;'>
+    {{#each photos}}
+        <div class="card" style="width: 30%; position: relative; float: left; margin-right: 5%; margin-left: 5%; margin-bottom: 3%">
+            {{>photo}}
+        </div>
+    {{/each}}
+</div>
+
+

@@ -9,7 +9,7 @@ import {
     DecodedUser,
     ResolvedDecodedUser,
     Secret,
-} from 'src/auth/interfaces/auth.interfaces';
+} from 'src/middlewares/interfaces/auth.middleware.interfaces';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {

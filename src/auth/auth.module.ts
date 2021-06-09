@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/repositories/user.entity';
+import { UsersEntity } from 'src/repositories/users.entity';
 import { Module } from '@nestjs/common';
 import { AuthController } from 'src/auth/auth.controller';
 import { AuthService } from 'src/auth/auth.service';
@@ -9,7 +9,7 @@ import { GoogleAuthController } from 'src/auth/google.auth.controller';
 import { GoogleAuthStrategyService } from 'src/auth/google.auth.strategy.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserEntity]), UserModule],
+    imports: [TypeOrmModule.forFeature([UsersEntity]), UserModule],
     providers: [AuthService, UserService, GoogleAuthStrategyService],
     controllers: [AuthController, GoogleAuthController],
 })

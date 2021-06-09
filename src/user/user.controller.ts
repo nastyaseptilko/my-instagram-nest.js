@@ -1,11 +1,10 @@
 import { UserService } from './user.service';
-import { Body, Controller, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import {
     ApiCreatedResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiParam,
-    ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
 import { User } from './interfaces/user.interfaces';
@@ -44,10 +43,10 @@ export class UserController {
     }
 
     @Put('/user')
-    @ApiQuery({ name: 'userId' })
+    @ApiParam({ name: 'userId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async updateUser(@Body() updateUserDto: UpdateUserDto, @Query('userId') userId: string) {
+    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: string) {
         const user = await this.userService.update(userId, updateUserDto);
         if (!user) {
             throw new NotFoundException('The user does not exist!');

@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-@Entity({ name: 'user' })
-export class UserEntity {
+@Entity({ name: 'users' })
+export class UsersEntity {
     @PrimaryGeneratedColumn({ name: 'user_id' })
     id!: number;
 
