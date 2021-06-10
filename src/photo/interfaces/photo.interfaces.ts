@@ -4,3 +4,9 @@ export type Photo = {
     caption: string | null;
     imagePath: string;
 };
+
+export type CreatePhoto = {
+    userId: number;
+    caption: string;
+    imagePath: string;
+};

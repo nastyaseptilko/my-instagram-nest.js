@@ -11,6 +11,18 @@
 <div>
     {{{body}}}
 </div>
-
+<script>
+    function createPhoto() {
+        let options = {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                imagePath: document.getElementById(`imagePath`).getAttribute('src'),
+                caption: document.getElementById(`caption`).value,
+            }),
+        };
+        fetch(`/api/photo`, options)
+            .then(response => response);
+    }
+</script>
 </body>
 </html>

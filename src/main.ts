@@ -14,6 +14,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     app.use(cookieParser());
     app.useStaticAssets(join(__dirname, '..', 'static'));
+    app.useStaticAssets(join(__dirname, '..', 'uploads'));
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
 
     app.set('view engine', 'hbs');
