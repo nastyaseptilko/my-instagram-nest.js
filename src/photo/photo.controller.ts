@@ -10,13 +10,13 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { PhotoService } from './photo.service';
-import { AuthenticatedRequest } from '../middlewares/interfaces/auth.middleware.interfaces';
+import { PhotoService } from 'src/photo/photo.service';
+import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
-import { CreatePhotoDto } from './dto/create.photo.dto';
+import { CreatePhotoDto } from 'src/photo/dto/create.photo.dto';
 
 const storage = {
     storage: diskStorage({
