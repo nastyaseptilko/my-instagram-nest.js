@@ -2,11 +2,11 @@ export type Photo = {
     id: number;
     userId: number;
     caption: string | null;
-    imagePath: string;
+    imageUrl: string;
 };
 
-export type CreatePhoto = {
+export type CreatePhotoPayload = {
     userId: number;
+    imageUrl: string;
     caption: string;
-    imagePath: string;
 };

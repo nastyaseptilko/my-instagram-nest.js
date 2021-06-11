@@ -9,9 +9,9 @@
 
 {{#if viewForm}}
     <div class="card" style="width: 50%; margin-left: 1%; position: relative;">
-        <img src="{{imagePath}}" id='imagePath' class="card-img-top" alt="...">
+        <img src="{{imageUrl}}" id='imageUrl' class="card-img-top" alt="...">
         <div class="card-body">
-            <input name='caption' type="text" id='caption' placeholder="Enter your caption for photo" class="form-control" required>
+            <input name='caption' type="text" id='caption' placeholder="Enter your caption for photo" class="form-control">
             <p></p>
             <button type="submit" onclick="createPhoto()" id="submit" class="btn btn-outline-info">Publish photo</button>
             <button type="button"  class="btn btn-outline-dark" onclick="history.back();">Back</button>

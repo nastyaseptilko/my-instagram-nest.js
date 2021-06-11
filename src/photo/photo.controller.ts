@@ -67,7 +67,7 @@ export class PhotoController {
                 title: 'Photo',
                 layout: 'photos',
                 viewForm: true,
-                imagePath: `/${file.filename}`,
+                imageUrl: `/${file.filename}`,
             });
         } else {
             res.render('photo', {
@@ -87,9 +87,14 @@ export class PhotoController {
         @Res() res: Response,
         @Body() createPhotoDto: CreatePhotoDto,
     ) {
+        /* After the user has uploaded the photo and clicked on the "Submit" button, 
+            a form will appear on the client that displays the image and input to describe the image.
+            ImageUrl is taken from the src attribute and passed in the body of the request to create a photo.
+        */
+
         await this.photoService.createPhoto({
             userId: req.user.id,
-            imagePath: createPhotoDto.imagePath,
+            imageUrl: createPhotoDto.imageUrl,
             caption: createPhotoDto.caption,
         });
         res.render('photo', {

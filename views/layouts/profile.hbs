@@ -22,8 +22,7 @@
                 bio: document.getElementById(`bio-${userId}`).value
             }),
         };
-        fetch(`/api/profile/${userId}`, options)
-            .then(response => response);
+        fetch(`/api/profile/${userId}`, options);
     }
 </script>
 </body>

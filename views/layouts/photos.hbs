@@ -16,12 +16,11 @@
         let options = {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                imagePath: document.getElementById(`imagePath`).getAttribute('src'),
+                imageUrl: document.getElementById(`imageUrl`).getAttribute('src'),
                 caption: document.getElementById(`caption`).value,
             }),
         };
-        fetch(`/api/photo`, options)
-            .then(response => response);
+        fetch(`/api/photo`, options);
     }
 </script>
 </body>

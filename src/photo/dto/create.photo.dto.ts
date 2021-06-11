@@ -9,5 +9,5 @@ export class CreatePhotoDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    imagePath!: string;
+    imageUrl!: string;
 }
