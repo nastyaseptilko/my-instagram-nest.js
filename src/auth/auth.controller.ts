@@ -50,6 +50,8 @@ export class AuthController {
     @ApiNotFoundResponse()
     async logout(@Res() res: Response): Promise<void> {
         res.clearCookie('token');
+        res.clearCookie('idToken');
+        res.clearCookie('userId');
         res.redirect('/login');
     }
 

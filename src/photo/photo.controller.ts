@@ -1,4 +1,4 @@
-import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
     Body,
     Controller,
@@ -59,9 +59,18 @@ export class PhotoController {
         });
     }
 
-    @Post('upload')
-    @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+    // TODO: avoid adding empty photos to db and storage
+    @Post('/photo/upload')
+    @UseInterceptors(FileInterceptor('image', storage))
+    publishPhoto(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() body: CreatePhotoDto,
+        @Req() req: AuthenticatedRequest,
+        @Res() res: Response,
+    ) {
+        console.log('caption: ' + body.caption);
+        console.log('filename: ' + file.filename);
+        // TODO: add photo insert
         if (file) {
             res.render('photo', {
                 title: 'Photo',
@@ -74,12 +83,13 @@ export class PhotoController {
                 title: 'Photo',
                 layout: 'photos',
                 viewForm: false,
-                error: 'Your do not choose file',
+                error: 'You did not choose file',
             });
         }
     }
 
-    @Post('/photo')
+    // TODO: move photo inserting to the method above
+    /*@Post('/photo')
     @ApiCreatedResponse()
     @ApiNotFoundResponse()
     async addPhoto(
@@ -87,10 +97,10 @@ export class PhotoController {
         @Res() res: Response,
         @Body() createPhotoDto: CreatePhotoDto,
     ) {
-        /* After the user has uploaded the photo and clicked on the "Submit" button, 
+        /!* After the user has uploaded the photo and clicked on the "Submit" button,
             a form will appear on the client that displays the image and input to describe the image.
             ImageUrl is taken from the src attribute and passed in the body of the request to create a photo.
-        */
+        *!/
 
         await this.photoService.createPhoto({
             userId: req.user.id,
@@ -103,5 +113,5 @@ export class PhotoController {
             viewForm: false,
             message: 'Your photo has been publish',
         });
-    }
+    }*/
 }

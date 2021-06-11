@@ -6,6 +6,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { HomeController } from 'src/home/home.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { PhotoModule } from 'src/photo/photo.module';
+import { FollowingModule } from 'src/following/following.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { PhotoModule } from 'src/photo/photo.module';
         UserModule,
         AuthModule,
         PhotoModule,
+        FollowingModule,
     ],
     controllers: [HomeController],
 })
