@@ -5,6 +5,9 @@
     <title>{{title}}</title>
     <link rel="icon" href="/img/insta-logo.png">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/instagram.min.css">
+    <link rel="stylesheet" href="/css/instagram.css">
+
     <style>
         .photo-hidden {
             display: none;
@@ -16,6 +19,12 @@
     {{{body}}}
 </div>
 <script>
+
+    function setFilter(selectObject) {
+        const result = document.querySelector('#figure');
+        result.className = selectObject.value;
+    }
+
     function uploadPhoto(inputFile) {
         if (inputFile.files && inputFile.files[0]) {
             const reader = new FileReader();
@@ -35,6 +44,8 @@
             return;
         }
         const caption = document.getElementById(`caption`);
+        const figure = document.getElementById(`figure`);
+
         const formData = new FormData();
         formData.append(
             "image",
@@ -42,6 +53,7 @@
             newPhoto.getAttribute('data-name')
         );
         formData.append('caption', caption.value);
+        formData.append('filter', figure.className);
 
         await fetch(`/api/photo/upload`, {
             method: 'POST',

@@ -70,6 +70,7 @@ export class PhotoController {
             await this.photoService.createPhoto({
                 userId: req.user.id,
                 imageUrl: `/${file.filename}`,
+                filter: createPhotoDto.filter,
                 caption: createPhotoDto.caption,
             });
         } else {
