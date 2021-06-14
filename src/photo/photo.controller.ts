@@ -1,4 +1,4 @@
-import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
     Body,
     Controller,
@@ -22,8 +22,7 @@ const storage = {
     storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-            const filename: string =
-                path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const filename: string = uuidv4();
             const extension: string = path.parse(file.originalname).ext;
 
             cb(null, `${filename}${extension}`);
@@ -59,49 +58,26 @@ export class PhotoController {
         });
     }
 
-    @Post('upload')
-    @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+    @Post('/photo/upload')
+    @UseInterceptors(FileInterceptor('image', storage))
+    async publishPhoto(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() createPhotoDto: CreatePhotoDto,
+        @Req() req: AuthenticatedRequest,
+        @Res() res: Response,
+    ) {
         if (file) {
-            res.render('photo', {
-                title: 'Photo',
-                layout: 'photos',
-                viewForm: true,
+            await this.photoService.createPhoto({
+                userId: req.user.id,
                 imageUrl: `/${file.filename}`,
+                caption: createPhotoDto.caption,
             });
         } else {
             res.render('photo', {
                 title: 'Photo',
                 layout: 'photos',
-                viewForm: false,
-                error: 'Your do not choose file',
+                error: 'You did not choose file',
             });
         }
-    }
-
-    @Post('/photo')
-    @ApiCreatedResponse()
-    @ApiNotFoundResponse()
-    async addPhoto(
-        @Req() req: AuthenticatedRequest,
-        @Res() res: Response,
-        @Body() createPhotoDto: CreatePhotoDto,
-    ) {
-        /* After the user has uploaded the photo and clicked on the "Submit" button, 
-            a form will appear on the client that displays the image and input to describe the image.
-            ImageUrl is taken from the src attribute and passed in the body of the request to create a photo.
-        */
-
-        await this.photoService.createPhoto({
-            userId: req.user.id,
-            imageUrl: createPhotoDto.imageUrl,
-            caption: createPhotoDto.caption,
-        });
-        res.render('photo', {
-            title: 'Photo',
-            layout: 'photos',
-            viewForm: false,
-            message: 'Your photo has been publish',
-        });
     }
 }

@@ -5,6 +5,7 @@ import { PhotoService } from 'src/photo/photo.service';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { Response } from 'express';
 import { UpdateUserDto } from 'src/user/dto/update.user.dto';
+import { FollowingService } from 'src/following/following.service';
 
 @ApiTags('Profile')
 @Controller('/api')
@@ -12,6 +13,7 @@ export class UserProfileController {
     constructor(
         private readonly userService: UserService,
         private readonly photoService: PhotoService,
+        private readonly followingService: FollowingService,
     ) {}
 
     @Get('/profile/:userId?')
@@ -25,13 +27,17 @@ export class UserProfileController {
     ): Promise<void> {
         const targetUserId = userId || req.user.id;
         const user = await this.userService.findOne(targetUserId);
+        const publishers = await this.followingService.findAllPublishers(req.user.id);
+
         if (user) {
             const photos = await this.photoService.findAll(targetUserId);
             const renderOptions = {
                 title: 'Profile',
                 layout: 'profile',
                 user: user,
-                allowEdit: req.user.id === userId,
+                allowEdit: req.user.id === targetUserId,
+                allowViewPublishers: publishers,
+                publishers: publishers,
                 message: '',
                 photos,
             };

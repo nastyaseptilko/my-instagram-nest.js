@@ -1,29 +1,18 @@
 <h1 style='margin-left: 1%;'>Upload photos</h1>
-<form style="margin-left: 1%; padding: 2%; width: 50%; position: relative; border: solid #6c757d 0.01rem;" action="/api/upload" method="post" enctype="multipart/form-data">
-    <label>Image:</label><br>
-    <input type="file" name="file" accept="image/*"/><br><br>
-    <input type="submit" class="btn btn-info" value="Send" />
-    <button type="button"  class="btn btn-outline-dark" onclick="history.back();">Back</button>
-</form>
-<p></p>
 
-{{#if viewForm}}
-    <div class="card" style="width: 50%; margin-left: 1%; position: relative;">
-        <img src="{{imageUrl}}" id='imageUrl' class="card-img-top" alt="...">
-        <div class="card-body">
-            <input name='caption' type="text" id='caption' placeholder="Enter your caption for photo" class="form-control">
-            <p></p>
-            <button type="submit" onclick="createPhoto()" id="submit" class="btn btn-outline-info">Publish photo</button>
-            <button type="button"  class="btn btn-outline-dark" onclick="history.back();">Back</button>
-        </div>
-    </div>
-{{/if}}
+<div style="margin-left: 1%; padding: 2%; width: 50%; position: relative; border: solid #6c757d 0.01rem;">
+    <input id='file' type="file" name="file" accept="image/*" onchange="uploadPhoto(this);"/><br><br>
+</div>
 
-{{#if message}}
-    <div class="alert alert-success" style="width: 50%; margin-left: 1%; position: relative;" role="alert">
-        {{message}}
+<div class="card" style="width: 50%; margin-left: 1%; position: relative;">
+    <img id="newPhoto" src="#" class="card-img-top photo-hidden"/>
+    <div class="card-body">
+        <input id='caption' name='caption' type="text" placeholder="Enter your caption for photo" class="form-control">
+        <p></p>
+        <button type="submit" onclick="createPhoto()" id="submit" class="btn btn-outline-info">Publish Photo</button>
+        <button type="button"  class="btn btn-outline-dark" onclick="history.back();">Back</button>
     </div>
-{{/if}}
+</div>
 
 {{#if error}}
     <div class="alert alert-danger" style="width: 50%; margin-left: 1%; position: relative;" role="alert">

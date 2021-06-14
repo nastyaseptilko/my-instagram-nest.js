@@ -8,6 +8,7 @@
         </div>
     </div>
 
+    {{#if allowEdit}}
     <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
         <h6>Edit information about profile:</h6>
         <div class="form-group ">
@@ -28,12 +29,25 @@
             <input type="text" name="bio" id="bio-{{user.id}}" value="{{user.bio}}" class="form-control">
         </div>
 
-        <button type="submit" onclick="updateProfile({{user.id}})" id="submit" class="btn btn-outline-info">Save</button>
+        <button type="submit" onclick="updateProfile({{user.id}})" id="submit" class="btn btn-outline-info">Save
+        </button>
         <button type="button" class="btn btn-outline-dark" onclick="history.back();">Back</button>
+    </div>
+    {{/if}}
+
+    <p></p>
+    <div>
+        {{#if  allowViewPublishers}}
+            <h6 style="margin-left: 5%">Your publishers:</h6>
+            <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
+                {{#each publishers}}
+                    {{>publisher}}
+                {{/each}}
+            </div>
+        {{/if}}
     </div>
 
 </div>
-
 
 {{#if  message}}
     <div class="error">
@@ -46,7 +60,7 @@
 <div style='overflow-y: scroll; margin-top: 1rem;'>
     {{#each photos}}
         <div class="card"
-             style="width: 30%; position: relative; float: left; margin-right: 5%; margin-left: 5%; margin-bottom: 3%">
+             style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
             {{>photo}}
         </div>
     {{/each}}
