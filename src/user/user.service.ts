@@ -27,7 +27,7 @@ export class UserService {
         await this.usersRepository.insert(createUser);
     }
 
-    update(userId: string, updateUser: UpdateUserPayload) {
+    update(userId: number, updateUser: UpdateUserPayload) {
         return this.usersRepository.update(userId, updateUser);
     }
 }

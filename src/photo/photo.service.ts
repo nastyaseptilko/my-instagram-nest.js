@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PhotosEntity } from '../repositories/photos.entity';
-import { Photo } from './interfaces/photo.interfaces';
+import { PhotosEntity } from 'src/repositories/photos.entity';
+import { CreatePhotoPayload, Photo } from 'src/photo/interfaces/photo.interfaces';
 
 @Injectable()
 export class PhotoService {
@@ -29,7 +29,11 @@ export class PhotoService {
             photoId: p.photos_photo_id,
             userId: p.photos_user_id,
             caption: p.photos_caption,
-            imagePath: p.photos_imagePath,
+            imageUrl: p.photos_imageUrl,
         }));
+    }
+
+    async createPhoto(createPhoto: CreatePhotoPayload): Promise<void> {
+        await this.photoRepository.insert(createPhoto);
     }
 }

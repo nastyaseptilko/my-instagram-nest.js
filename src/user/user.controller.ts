@@ -46,7 +46,7 @@ export class UserController {
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: string) {
+    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
         const user = await this.userService.update(userId, updateUserDto);
         if (!user) {
             throw new NotFoundException('The user does not exist!');

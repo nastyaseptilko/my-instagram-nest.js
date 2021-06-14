@@ -18,7 +18,7 @@ export class PhotosEntity {
     @Column()
     @IsNotEmpty()
     @IsString()
-    imagePath!: string;
+    imageUrl!: string;
 
     @ManyToOne(() => UsersEntity, user => user.id)
     @JoinColumn({ name: 'user_id' })
