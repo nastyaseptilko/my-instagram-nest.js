@@ -20,6 +20,10 @@ export class PhotosEntity {
     @IsString()
     imageUrl!: string;
 
+    @Column({ nullable: true })
+    @IsString()
+    filter!: string;
+
     @ManyToOne(() => UsersEntity, user => user.id)
     @JoinColumn({ name: 'user_id' })
     user!: UsersEntity;

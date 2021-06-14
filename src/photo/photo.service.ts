@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PhotosEntity } from 'src/repositories/photos.entity';
-import { CreatePhotoPayload, Photo } from 'src/photo/interfaces/photo.interfaces';
+import {
+    CreatePhotoPayload,
+    Photo,
+    PhotoAndFollowingFieldsFromDatabase,
+    PhotoInfo,
+} from 'src/photo/interfaces/photo.interfaces';
 
 @Injectable()
 export class PhotoService {
@@ -15,7 +20,7 @@ export class PhotoService {
         return await this.photoRepository.find({ where: { userId } });
     }
 
-    async findAllPhotos(userId: number) {
+    async findAllPhotos(userId: number): Promise<PhotoInfo[]> {
         const photos = await this.photoRepository
             .createQueryBuilder('photos')
             .select()
@@ -25,11 +30,12 @@ export class PhotoService {
             .orderBy('photo_id', 'DESC')
             .getRawMany();
 
-        return photos.map(p => ({
+        return photos.map((p: PhotoAndFollowingFieldsFromDatabase) => ({
             photoId: p.photos_photo_id,
             userId: p.photos_user_id,
             caption: p.photos_caption,
             imageUrl: p.photos_imageUrl,
+            filter: p.photos_filter,
         }));
     }
 
