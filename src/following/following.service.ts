@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FollowingEntity } from '../repositories/following.entity';
+import { FollowingEntity } from 'src/repositories/following.entity';
 import { Repository } from 'typeorm';
-import { Following } from './interfaces/following.interfaces';
+import {
+    FollowingAndUserFieldsFromDatabase,
+    PublisherInfo,
+} from 'src/following/interfaces/following.interfaces';
 
 @Injectable()
 export class FollowingService {
@@ -11,7 +14,17 @@ export class FollowingService {
         private readonly followingRepository: Repository<FollowingEntity>,
     ) {}
 
-    async findAllPublishers(userId: number): Promise<Following[]> {
-        return await this.followingRepository.find({ where: { subscriber: userId } });
+    async findAllPublishers(userId: number): Promise<PublisherInfo[]> {
+        const result = await this.followingRepository
+            .createQueryBuilder('following')
+            .select()
+            .innerJoinAndSelect('users', 'u', 'u.user_id = following.publisher_id')
+            .where('following.subscriber_id = :userId', { userId })
+            .getRawMany();
+
+        return result.map((el: FollowingAndUserFieldsFromDatabase) => ({
+            userNamePublisher: el.u_userName,
+            publisherId: el.following_publisher_id,
+        }));
     }
 }

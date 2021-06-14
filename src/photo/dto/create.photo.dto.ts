@@ -5,9 +5,4 @@ export class CreatePhotoDto {
     @ApiProperty()
     @IsString()
     caption!: string;
-
-    /*@ApiProperty()
-    @IsNotEmpty()
-    @IsString()
-    imageUrl!: string;*/
 }

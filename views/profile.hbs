@@ -35,10 +35,10 @@
     </div>
     {{/if}}
 
-    <a href='/api/publishers' style='margin-left: 5%' class="btn btn-outline-primary" type="submit">View your publishers</a>
     <p></p>
     <div>
         {{#if  allowViewPublishers}}
+            <h6 style="margin-left: 5%">Your publishers:</h6>
             <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
                 {{#each publishers}}
                     {{>publisher}}
@@ -60,7 +60,7 @@
 <div style='overflow-y: scroll; margin-top: 1rem;'>
     {{#each photos}}
         <div class="card"
-             style="width: 30%; position: relative; float: left; margin-right: 5%; margin-left: 5%; margin-bottom: 3%">
+             style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
             {{>photo}}
         </div>
     {{/each}}
