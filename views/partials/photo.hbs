@@ -2,6 +2,15 @@
 <figure class="{{filter}}" id='figure'>
     <img src="{{imageUrl}}" class="card-img-top" alt="...">
 </figure>
+
+{{#if allowEdit}}
+<div style="padding: 1rem">
+    <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo" class="form-control"> <br>
+    <button class="btn btn-warning" onclick='updatePhoto({{id}})'>Save updates</button>
+    <button class="btn btn-danger" onclick='deletePhoto({{id}})'>Delete photo</button>
+</div>
+{{/if}}
+
 <div class="card-body">
     <p class="card-text">{{caption}}</p>
     <input name='comment' type="text" placeholder="Enter your comment" class="form-control">

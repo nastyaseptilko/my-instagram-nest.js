@@ -6,7 +6,8 @@ import {
     CreatePhotoPayload,
     Photo,
     PhotoAndFollowingFieldsFromDatabase,
-    PhotoInfo,
+    PhotoUpdatePayload,
+    PhotoWithFollowing,
 } from 'src/photo/interfaces/photo.interfaces';
 
 @Injectable()
@@ -20,7 +21,7 @@ export class PhotoService {
         return await this.photoRepository.find({ where: { userId } });
     }
 
-    async findAllPhotos(userId: number): Promise<PhotoInfo[]> {
+    async findAllPhotos(userId: number): Promise<PhotoWithFollowing[]> {
         const photos = await this.photoRepository
             .createQueryBuilder('photos')
             .select()
@@ -41,5 +42,13 @@ export class PhotoService {
 
     async createPhoto(createPhoto: CreatePhotoPayload): Promise<void> {
         await this.photoRepository.insert(createPhoto);
+    }
+
+    async update(photoId: number, photo: PhotoUpdatePayload): Promise<void> {
+        await this.photoRepository.update(photoId, photo);
+    }
+
+    async delete(photoId: number): Promise<void> {
+        await this.photoRepository.delete(photoId);
     }
 }

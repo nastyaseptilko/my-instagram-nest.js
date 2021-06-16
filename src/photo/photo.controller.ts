@@ -1,9 +1,12 @@
-import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import {
     Body,
     Controller,
+    Delete,
     Get,
+    Param,
     Post,
+    Put,
     Req,
     Res,
     UploadedFile,
@@ -17,6 +20,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePhotoDto } from 'src/photo/dto/create.photo.dto';
+import { UpdatePhotoDto } from './dto/update.photo.dto';
 
 const storage = {
     storage: diskStorage({
@@ -80,5 +84,24 @@ export class PhotoController {
                 error: 'You did not choose file',
             });
         }
+    }
+
+    @Put('photo/:photoId')
+    @ApiParam({ name: 'photoId' })
+    @ApiOkResponse()
+    @ApiNotFoundResponse()
+    async updatePhoto(
+        @Param('photoId') photoId: number,
+        @Body() updatePhotoDto: UpdatePhotoDto,
+    ): Promise<void> {
+        await this.photoService.update(photoId, updatePhotoDto);
+    }
+
+    @Delete('photo/:photoId')
+    @ApiParam({ name: 'photoId' })
+    @ApiOkResponse()
+    @ApiNotFoundResponse()
+    async deletePhoto(@Param('photoId') photoId: number): Promise<void> {
+        await this.photoService.delete(photoId);
     }
 }

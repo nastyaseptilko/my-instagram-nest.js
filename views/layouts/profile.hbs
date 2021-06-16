@@ -14,6 +14,24 @@
     {{{body}}}
 </div>
 <script>
+
+    function updatePhoto(photoId) {
+        let options = {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                caption: document.getElementById(`caption-${photoId}`).value,
+            }),
+        };
+        fetch(`/api/photo/${photoId}`, options);
+    }
+
+    function deletePhoto(photoId) {
+        let options = {
+            method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        };
+        fetch(`/api/photo/${photoId}`, options);
+    }
+
     function updateProfile(userId) {
         let options = {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },
