@@ -24,10 +24,14 @@ export type PhotoAndFollowingFieldsFromDatabase = {
     f_publisher_id: number | null;
 };
 
-export type PhotoInfo = {
+export type PhotoWithFollowing = {
     photoId: number;
     userId: number;
     caption: string | null;
     imageUrl: string;
     filter: string | null;
+};
+
+export type PhotoUpdatePayload = {
+    caption: string;
 };
