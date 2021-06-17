@@ -15,6 +15,46 @@
 </div>
 <script>
 
+    function resultSearch() {
+        let search = document.getElementsByName('search')[0].value;
+
+        fetch(`/api/search?search=${search}`)
+            .then(response => response.json())
+            .then(search => {
+                const listLinks = document.getElementsByName('link')[0];
+                const textNoFound = document.getElementsByName('text')[0];
+                listLinks.innerHTML = '';
+
+                if (search.length === 0) {
+                    const noFound = document.createElement('p');
+                    noFound.innerText = 'No matches found on users';
+                    textNoFound.appendChild(noFound);
+                }
+
+                const link = document.createElement('li');
+
+                if (search) {
+                    search.forEach(el => {
+                        const a = document.createElement('a');
+                        const empty = document.createElement('p')
+                        const buttonFollow = document.createElement('button')
+                        buttonFollow.innerText = 'follow';
+
+                        a.setAttribute('value', el.id);
+                        if (el.name) {
+                            a.setAttribute('href', `/api/profile/${el.id}`);
+                            a.innerText = el.name;
+                            empty.innerText = ' ';
+                        }
+                        link.appendChild(a);
+                        link.appendChild(empty);
+                    });
+                }
+
+                listLinks.appendChild(link);
+            });
+    }
+
     function updatePhoto(photoId) {
         let options = {
             method: 'PUT', headers: { 'Content-Type': 'application/json' },

@@ -47,6 +47,16 @@
         {{/if}}
     </div>
 
+    <div style="margin-left: 5%" class="block-left">
+        <input type="text" name="search" class="form-control input-search" placeholder="Search users..." required>
+        <br>
+        <button type="submit" onclick="resultSearch()" class="btn btn-outline-dark search-button">
+            Search
+        </button>
+        <div name="text"></div>
+        <ul class="nav flex-column" name="link"></ul>
+    </div>
+
 </div>
 
 {{#if message}}
