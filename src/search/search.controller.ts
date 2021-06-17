@@ -12,11 +12,6 @@ export class SearchController {
     @ApiOkResponse()
     @ApiNotFoundResponse()
     async getSearch(@Query('search') search: string) {
-        const users = await this.searchService.findUsers(search);
-        if (users.length > 0) {
-            return users;
-        } else {
-            throw new NotFoundException('Users do not exist');
-        }
+        return await this.searchService.findUsers(search);
     }
 }

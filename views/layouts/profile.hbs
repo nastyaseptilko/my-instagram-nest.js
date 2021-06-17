@@ -39,6 +39,7 @@
                         const empty = document.createElement('p')
                         const buttonFollow = document.createElement('button')
                         buttonFollow.innerText = 'follow';
+                        buttonFollow.className = 'btn btn-success';
 
                         a.setAttribute('value', el.id);
                         if (el.name) {
@@ -46,8 +47,11 @@
                             a.innerText = el.name;
                             empty.innerText = ' ';
                         }
+
                         link.appendChild(a);
+                        link.appendChild(buttonFollow);
                         link.appendChild(empty);
+
                     });
                 }
 
