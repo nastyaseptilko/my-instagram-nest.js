@@ -1,6 +1,8 @@
 import { ApiNotFoundResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
 import { SearchService } from './search.service';
+import { User } from 'src/user/interfaces/user.interfaces';
+import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 
 @ApiTags('Search source')
 @Controller('/api')
@@ -11,7 +13,10 @@ export class SearchController {
     @ApiQuery({ name: 'search' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getSearch(@Query('search') search: string) {
-        return await this.searchService.findUsers(search);
+    async getSearch(
+        @Query('search') search: string,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<User[]> {
+        return await this.searchService.findUsers(search, req.user.id);
     }
 }

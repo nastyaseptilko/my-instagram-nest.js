@@ -40,11 +40,12 @@
                         const buttonFollow = document.createElement('button')
                         buttonFollow.innerText = 'follow';
                         buttonFollow.className = 'btn btn-success';
+                        buttonFollow.onclick = () => follow(el.id);
 
                         a.setAttribute('value', el.id);
-                        if (el.name) {
+                        if (el.userName) {
                             a.setAttribute('href', `/api/profile/${el.id}`);
-                            a.innerText = el.name;
+                            a.innerText = el.userName;
                             empty.innerText = ' ';
                         }
 
@@ -88,6 +89,21 @@
         };
         fetch(`/api/profile/${userId}`, options);
     }
+
+    function follow(publisherId) {
+        let options = {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+        };
+        fetch(`/api/follow/${publisherId}`, options);
+    }
+
+    function unfollow(followingId) {
+        let options = {
+            method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        };
+        fetch(`/api/unfollow/${followingId}`, options);
+    }
+
 </script>
 </body>
 </html>
