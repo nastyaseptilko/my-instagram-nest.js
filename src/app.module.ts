@@ -7,6 +7,7 @@ import { HomeController } from 'src/home/home.controller';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { PhotoModule } from 'src/photo/photo.module';
 import { FollowingModule } from 'src/following/following.module';
+import { SearchModule } from 'src/search/search.module';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { FollowingModule } from 'src/following/following.module';
         AuthModule,
         PhotoModule,
         FollowingModule,
+        SearchModule,
     ],
     controllers: [HomeController],
 })
