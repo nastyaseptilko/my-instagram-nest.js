@@ -6,7 +6,7 @@ import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedRequestViaGoogle } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 
-@ApiTags('Google auth controller')
+@ApiTags('Google auth')
 @Controller('/auth/google')
 export class GoogleAuthController {
     constructor(private readonly userService: UserService) {}

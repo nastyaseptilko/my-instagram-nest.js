@@ -1,0 +1,10 @@
+<div class='card' style='width: 50%; position: relative; margin-left: 5%' xmlns='http://www.w3.org/1999/html'>
+    {{#each comments}}
+        {{>comment}}
+    {{/each}}
+    <div>
+        <button type="button" style="margin-left: 15px;" class="btn btn-outline-dark" onclick="history.back();">
+            Back
+        </button><p></p>
+    </div>
+</div>

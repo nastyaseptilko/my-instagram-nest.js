@@ -8,54 +8,59 @@
         </div>
     </div>
 
-    {{#if allowEdit}}
-    <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
-        <h6>Edit information about profile:</h6>
-        <div class="form-group ">
-            <span>Name:</span>
-            <input type="text" name="name" id="name-{{user.id}}" value="{{user.name}}" class="form-control">
-        </div>
-        <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">@</span>
-            <input type="text" name="userName" id="userName-{{user.id}}" value="{{user.userName}}" class="form-control"
-                   aria-label="Username" aria-describedby="basic-addon1">
-        </div>
-        <div class="form-group ">
-            <span>Web site:</span>
-            <input type="text" name="webSite" id="webSite-{{user.id}}" value="{{user.webSite}}" class="form-control">
-        </div>
-        <div class="form-group ">
-            <span>BIO:</span>
-            <input type="text" name="bio" id="bio-{{user.id}}" value="{{user.bio}}" class="form-control">
-        </div>
+    {{#if ownProfile}}
+        <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
+            <h6>Edit information about profile:</h6>
+            <div class="form-group ">
+                <span>Name:</span>
+                <input type="text" name="name" id="name-{{user.id}}" value="{{user.name}}" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">@</span>
+                <input type="text" name="userName" id="userName-{{user.id}}" value="{{user.userName}}"
+                       class="form-control"
+                       aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="form-group ">
+                <span>Web site:</span>
+                <input type="text" name="webSite" id="webSite-{{user.id}}" value="{{user.webSite}}"
+                       class="form-control">
+            </div>
+            <div class="form-group ">
+                <span>BIO:</span>
+                <input type="text" name="bio" id="bio-{{user.id}}" value="{{user.bio}}" class="form-control">
+            </div>
 
-        <button type="submit" onclick="updateProfile({{user.id}})" id="submit" class="btn btn-outline-info">Save
-        </button>
-        <button type="button" class="btn btn-outline-dark" onclick="history.back();">Back</button>
-    </div>
+            <button type="submit" onclick="updateProfile({{user.id}})" id="submit" class="btn btn-outline-info">Save
+            </button>
+            <button type="button" class="btn btn-outline-dark" onclick="history.back();">Back</button>
+        </div>
     {{/if}}
 
     <p></p>
-    <div>
-        {{#if  allowViewPublishers}}
-            <h6 style="margin-left: 5%">Your publishers:</h6>
-            <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
-                {{#each publishers}}
-                    {{>publisher}}
-                {{/each}}
-            </div>
-        {{/if}}
-    </div>
+    {{#if ownProfile}}
+        <div>
+            {{#if  allowViewPublishers}}
+                <h6 style="margin-left: 5%">Your publishers:</h6>
+                <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
+                    {{#each publishers}}
+                        {{>publisher}}
+                    {{/each}}
+                </div>
+            {{/if}}
+        </div>
 
-    <div style="margin-left: 5%" class="block-left">
-        <input type="text" name="search" class="form-control input-search" placeholder="Search users..." required>
-        <br>
-        <button type="submit" onclick="resultSearch()" class="btn btn-outline-dark search-button">
-            Search
-        </button>
-        <div name="text"></div>
-        <ul class="nav flex-column" name="link"></ul>
-    </div>
+
+        <div style="margin-left: 5%" class="block-left">
+            <input type="text" name="search" class="form-control input-search" placeholder="Search users..." required>
+            <br>
+            <button type="submit" onclick="resultSearch()" class="btn btn-outline-dark search-button">
+                Search
+            </button>
+            <div name="text"></div>
+            <ul class="nav flex-column" name="link"></ul>
+        </div>
+    {{/if}}
 
 </div>
 
@@ -71,7 +76,7 @@
     {{#each photos}}
         <div class="card"
              style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
-            {{>photo this allowEdit=@root.allowEdit}}
+            {{>photo this ownProfile=@root.ownProfile}}
         </div>
     {{/each}}
 </div>

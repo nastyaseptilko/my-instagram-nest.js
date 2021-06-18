@@ -35,7 +35,7 @@ export class UserProfileController {
                 title: 'Profile',
                 layout: 'profile',
                 user: user,
-                allowEdit: req.user.id === targetUserId,
+                ownProfile: req.user.id === targetUserId,
                 allowViewPublishers: publishers,
                 publishers: publishers,
                 message: '',

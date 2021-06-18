@@ -20,7 +20,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePhotoDto } from 'src/photo/dto/create.photo.dto';
-import { UpdatePhotoDto } from './dto/update.photo.dto';
+import { UpdatePhotoDto } from 'src/photo/dto/update.photo.dto';
 
 const storage = {
     storage: diskStorage({
@@ -71,7 +71,7 @@ export class PhotoController {
         @Res() res: Response,
     ) {
         if (file) {
-            await this.photoService.createPhoto({
+            await this.photoService.create({
                 userId: req.user.id,
                 imageUrl: `/${file.filename}`,
                 filter: createPhotoDto.filter,

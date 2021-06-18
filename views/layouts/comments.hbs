@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link rel="icon" href="/img/insta-logo.png">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/instagram.min.css">
+    <link rel="stylesheet" href="/css/instagram.css">
+</head>
+<body>
+
+<div>
+    {{{body}}}
+</div>
+
+<script>
+
+    function updateComment(commentId) {
+        let options ={
+            method:'PUT', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ text: document.getElementById(`comment-${commentId}`).value })
+        };
+        fetch (`/api/comment/${commentId}`,options);
+    }
+
+    function deleteComment(commentId) {
+        let options ={
+            method:'DELETE', headers:{'Content-Type':'application/json'}
+        };
+        fetch (`/api/comment/${commentId}`,options);
+    }
+
+</script>
+</body>
+</html>
