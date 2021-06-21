@@ -6,29 +6,29 @@ export class UsersEntity {
     @PrimaryGeneratedColumn({ name: 'user_id' })
     id!: number;
 
-    @Column({ length: 100, nullable: true })
+    @Column({ name: 'name', length: 100, nullable: true })
     @IsString()
     name!: string;
 
-    @Column({ length: 30 })
+    @Column({ name: 'user_name', length: 30 })
     @IsString()
     @IsNotEmpty()
     userName!: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'web_site', nullable: true })
     @IsString()
     webSite!: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'bio', nullable: true })
     @IsString()
     bio!: string;
 
-    @Column()
+    @Column({ name: 'email' })
     @IsString()
     @IsNotEmpty()
     email!: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'password', nullable: true })
     @IsString()
     password!: string;
 }

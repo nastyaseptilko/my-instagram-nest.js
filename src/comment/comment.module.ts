@@ -5,10 +5,12 @@ import { UsersEntity } from 'src/repositories/users.entity';
 import { UserService } from 'src/user/user.service';
 import { CommentService } from 'src/comment/comment.service';
 import { CommentController } from 'src/comment/comment.controller';
+import { CommentRepository } from 'src/comment/DAL/comment.repository';
+import { UserRepository } from 'src/user/DAL/user.repository';
 
 @Module({
     imports: [TypeOrmModule.forFeature([UsersEntity, CommentsEntity])],
-    providers: [UserService, CommentService],
+    providers: [UserRepository, UserService, CommentRepository, CommentService],
     controllers: [CommentController],
 })
 export class CommentModule {}

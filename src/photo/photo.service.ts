@@ -1,46 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PhotosEntity } from 'src/repositories/photos.entity';
 import {
     CreatePhotoPayload,
     Photo,
-    PhotoAndFollowingFieldsFromDatabase,
     PhotoUpdatePayload,
     PhotoWithFollowing,
 } from 'src/photo/interfaces/photo.interfaces';
+import { PhotoAndFollowingFieldsFromDatabase } from 'src/photo/DAL/photo.repository.interfaces';
+import { PhotoRepository } from 'src/photo/DAL/photo.repository';
 
 @Injectable()
 export class PhotoService {
-    constructor(
-        @InjectRepository(PhotosEntity)
-        private photoRepository: Repository<PhotosEntity>,
-    ) {}
+    constructor(private photoRepository: PhotoRepository) {}
 
     async findAll(userId: number): Promise<Photo[]> {
-        return await this.photoRepository.find({ where: { userId } });
+        return await this.photoRepository.find(userId);
     }
 
     async findAllPhotos(userId: number): Promise<PhotoWithFollowing[]> {
-        const photos = await this.photoRepository
-            .createQueryBuilder('photos')
-            .leftJoinAndSelect('following', 'f', 'f.publisher_id = photos.user_id')
-            .where('photos.user_id = :userId', { userId })
-            .orWhere('f.subscriber_id = :userId', { userId })
-            .orderBy('photo_id', 'DESC')
-            .getRawMany();
+        const photos = await this.photoRepository.findAllPhotos(userId);
 
         return photos.map((photo: PhotoAndFollowingFieldsFromDatabase) => ({
             photoId: photo.photos_photo_id,
             userId: photo.photos_user_id,
             caption: photo.photos_caption,
-            imageUrl: photo.photos_imageUrl,
+            imageUrl: photo.photos_image_url,
             filter: photo.photos_filter,
+            userName: photo.u_user_name,
         }));
     }
 
     async create(createPhotoPayload: CreatePhotoPayload): Promise<void> {
-        await this.photoRepository.insert(createPhotoPayload);
+        await this.photoRepository.create(createPhotoPayload);
     }
 
     async update(photoId: number, photoUpdatePayload: PhotoUpdatePayload): Promise<void> {

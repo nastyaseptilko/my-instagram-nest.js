@@ -1,4 +1,4 @@
-<h5 class="card-title">User name</h5>
+<h5 class="card-title">{{userName}}</h5>
 <figure class="{{filter}}" id='figure'>
     <img src="{{imageUrl}}" class="card-img-top" alt="...">
 </figure>
@@ -12,7 +12,11 @@
 {{/if}}
 
 <div class="card-body">
-    <p class="card-text">{{caption}}</p>
+    <p class="card-text"><strong>Description to the photo: </strong>{{caption}}</p>
+</div>
+
+{{#if isProfilePage}}
+<div class="card-body">
     <form action="/api/comment/{{id}}" method="post" style="" target="hiddenFrame">
         <div>
             <input name='text' type="text" placeholder="Enter your comment" class="form-control" required><br>
@@ -22,3 +26,5 @@
     <br>
     <a href="/api/comment/{{id}}" class="btn btn-primary">Get comments</a>
 </div>
+{{/if}}
+<hr>

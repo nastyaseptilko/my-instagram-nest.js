@@ -27,7 +27,7 @@ export class CommentController {
         @Res() res: Response,
         @Param('photoId') photoId: number,
     ): Promise<void> {
-        const comments = await this.commentService.findAllComments(photoId);
+        const comments = await this.commentService.findComments(photoId);
         res.render('comments', {
             title: 'Comment',
             layout: 'comments',

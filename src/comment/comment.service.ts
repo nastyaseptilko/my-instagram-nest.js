@@ -1,41 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsEntity } from 'src/repositories/comments.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import {
-    CommentAndUserFieldsFromDatabase,
     CommentWithUser,
     CreateCommentPayload,
     ReplaceEmailsParams,
     UpdateCommentPayload,
 } from 'src/comment/interfaces/comment.interfaces';
 import { UserService } from 'src/user/user.service';
+import { CommentAndUserFieldsFromDatabase } from 'src/comment/DAL/comment.repository.interfaces';
+import { CommentRepository } from 'src/comment/DAL/comment.repository';
 
 @Injectable()
 export class CommentService {
     constructor(
-        @InjectRepository(CommentsEntity)
-        private readonly commentRepository: Repository<CommentsEntity>,
+        private readonly commentRepository: CommentRepository,
         private readonly userService: UserService,
     ) {}
 
-    async findAllComments(photoId: number): Promise<CommentWithUser[]> {
-        const comments = await this.commentRepository
-            .createQueryBuilder('comments')
-            .leftJoinAndSelect('users', 'u', 'u.user_id = comments.user_id')
-            .where('comments.photo_id = :photoId', { photoId })
-            .getRawMany();
+    async findComments(photoId: number): Promise<CommentWithUser[]> {
+        const comments = await this.commentRepository.findAllComments(photoId);
 
         return comments.map((comment: CommentAndUserFieldsFromDatabase) => ({
             commentId: comment.comments_comment_id,
             text: comment.comments_text,
-            userName: comment.u_userName,
+            userName: comment.u_user_name,
             userId: comment.u_user_id,
         }));
     }
 
     async create(createCommentPayload: CreateCommentPayload): Promise<void> {
-        await this.commentRepository.insert(createCommentPayload);
+        await this.commentRepository.create(createCommentPayload);
     }
 
     async update(commentId: number, updateCommentPayload: UpdateCommentPayload): Promise<void> {
@@ -47,7 +40,7 @@ export class CommentService {
     }
 
     async replaceEmails(replaceEmailsParams: ReplaceEmailsParams): Promise<string> {
-        const matchUsers = await this.userService.findAllByEmails(replaceEmailsParams.emails);
+        const matchUsers = await this.userService.findUsersByEmails(replaceEmailsParams.emails);
         let comment = replaceEmailsParams.comment;
 
         for (const matchUser of matchUsers) {

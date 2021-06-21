@@ -76,7 +76,7 @@
     {{#each photos}}
         <div class="card"
              style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
-            {{>photo this ownProfile=@root.ownProfile}}
+            {{>photo this ownProfile=@root.ownProfile isProfilePage=@root.isProfilePage userName=@root.user.userName}}
         </div>
     {{/each}}
 </div>

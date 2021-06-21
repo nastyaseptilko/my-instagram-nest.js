@@ -11,16 +11,16 @@ export class PhotosEntity {
     @IsNumber()
     userId!: number;
 
-    @Column({ nullable: true })
+    @Column({ name: 'caption', nullable: true })
     @IsString()
     caption!: string;
 
-    @Column()
+    @Column({ name: 'image_url' })
     @IsNotEmpty()
     @IsString()
     imageUrl!: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'filter', nullable: true })
     @IsString()
     filter!: string;
 

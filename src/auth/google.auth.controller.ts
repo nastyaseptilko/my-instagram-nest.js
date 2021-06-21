@@ -21,7 +21,7 @@ export class GoogleAuthController {
         const userName = userProfile.user.userName;
         const idToken = userProfile.user.idToken;
 
-        const user = await this.userService.findOneByEmail(email);
+        const user = await this.userService.findUserByEmail(email);
         if (user) {
             res.cookie('userId', user.id);
             res.cookie('idToken', idToken);

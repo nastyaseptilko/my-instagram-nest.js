@@ -8,7 +8,7 @@ export class CommentsEntity {
     @PrimaryGeneratedColumn({ name: 'comment_id' })
     id!: number;
 
-    @Column()
+    @Column({ name: 'text' })
     @IsString()
     text!: string;
 

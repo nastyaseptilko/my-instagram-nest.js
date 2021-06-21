@@ -7,10 +7,13 @@ import { join } from 'path';
 import * as session from 'express-session';
 import * as hbs from 'express-handlebars';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Logger } from 'src/logger/logger.service';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+    const logger = app.get<Logger>(Logger);
+    app.useLogger(logger);
     app.useGlobalPipes(new ValidationPipe());
     app.use(cookieParser());
     app.useStaticAssets(join(__dirname, '..', 'static'));
@@ -35,7 +38,7 @@ async function bootstrap() {
         .setVersion('1.0')
         .setDescription(process.env.DESCRIPTION_FOR_SWAGGER as string)
         .setContact(
-            process.env.AUTHOR as string,
+            process.env.NAME_AUTHOR as string,
             process.env.APP_URL_SWAGGER as string,
             process.env.EMAIL_AUTHOR as string,
         )
@@ -45,7 +48,7 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
 
     await app.listen(Number(process.env.APP_PORT));
-    console.log(`Server run: ${process.env.APP_URL}`);
-    console.log(`Swagger documentation: ${process.env.APP_URL_SWAGGER}`);
+    logger.log(`Server run: ${process.env.APP_URL}`);
+    logger.log(`Swagger documentation: ${process.env.APP_URL_SWAGGER}`);
 }
 bootstrap();

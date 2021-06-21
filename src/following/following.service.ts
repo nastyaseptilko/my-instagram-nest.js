@@ -1,42 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FollowingEntity } from 'src/repositories/following.entity';
-import { Repository } from 'typeorm';
-import {
-    FollowingAndUserFieldsFromDatabase,
-    IdsForFollowing,
-    FollowingWithUser,
-    Following,
-} from 'src/following/interfaces/following.interfaces';
+import { IdsForFollowers, FollowersWithUser } from 'src/following/interfaces/following.interfaces';
+import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
+import { FollowingRepository } from 'src/following/DAL/following.repository';
 
 @Injectable()
 export class FollowingService {
-    constructor(
-        @InjectRepository(FollowingEntity)
-        private readonly followingRepository: Repository<FollowingEntity>,
-    ) {}
+    constructor(private readonly followingRepository: FollowingRepository) {}
 
-    async findAllPublishers(userId: number): Promise<FollowingWithUser[]> {
-        const result = await this.followingRepository
-            .createQueryBuilder('following')
-            .select()
-            .innerJoinAndSelect('users', 'u', 'u.user_id = following.publisher_id')
-            .where('following.subscriber_id = :userId', { userId })
-            .getRawMany();
+    async findPublishers(userId: number): Promise<FollowersWithUser[]> {
+        const publishers = await this.followingRepository.findAllPublishers(userId);
 
-        return result.map((el: FollowingAndUserFieldsFromDatabase) => ({
+        return publishers.map((el: FollowersAndUserFieldsFromDatabase) => ({
             followingId: el.following_follow_id,
-            userNamePublisher: el.u_userName,
+            userNamePublisher: el.u_user_name,
             publisherId: el.following_publisher_id,
         }));
     }
 
-    async follow(idsForFollowing: IdsForFollowing): Promise<void> {
-        const following: Following[] = await this.followingRepository.find({
-            where: { subscriber: idsForFollowing.subscriber, publisher: idsForFollowing.publisher },
-        });
-        if (following.length === 0) {
-            await this.followingRepository.insert(idsForFollowing);
+    async follow(idsForFollowing: IdsForFollowers): Promise<void> {
+        const followers = await this.followingRepository.findFollowers(idsForFollowing);
+
+        if (followers.length === 0) {
+            await this.followingRepository.create(idsForFollowing);
         } else {
             throw new Error('You are already following this person');
         }
