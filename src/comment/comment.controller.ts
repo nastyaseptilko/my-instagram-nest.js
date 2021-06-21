@@ -11,6 +11,7 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { CreateCommentDto } from 'src/comment/dto/create.comment.dto';
 import { UpdateCommentDto } from 'src/comment/dto/update.comment.dto';
+import { EmailService } from 'src/comment/email.service';
 
 @ApiTags('Comment')
 @Controller('/api')
@@ -46,10 +47,21 @@ export class CommentController {
         @Param('photoId') photoId: number,
         @Body() createCommentDto: CreateCommentDto,
     ): Promise<void> {
-        console.log(photoId, 'photoId');
-        console.log(createCommentDto.text, 'createCommentDto.text');
-        await this.commentService.create({
+        const emailService = new EmailService();
+        const emails = await emailService.searchEmails(createCommentDto.text);
+
+        await emailService.sendEmails({
             text: createCommentDto.text,
+            emails,
+        });
+
+        const comment = await this.commentService.replaceEmails({
+            emails,
+            comment: createCommentDto.text,
+        });
+
+        await this.commentService.create({
+            text: comment,
             userId: req.user.id,
             photoId,
         });

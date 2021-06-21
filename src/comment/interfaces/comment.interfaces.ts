@@ -35,3 +35,8 @@ export type CommentWithUser = {
     userName: string;
     userId: number;
 };
+
+export type ReplaceEmailsParams = {
+    emails: string[];
+    comment: string;
+};

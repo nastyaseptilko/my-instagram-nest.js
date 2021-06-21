@@ -6,14 +6,17 @@ import {
     CommentAndUserFieldsFromDatabase,
     CommentWithUser,
     CreateCommentPayload,
+    ReplaceEmailsParams,
     UpdateCommentPayload,
 } from 'src/comment/interfaces/comment.interfaces';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class CommentService {
     constructor(
         @InjectRepository(CommentsEntity)
         private readonly commentRepository: Repository<CommentsEntity>,
+        private readonly userService: UserService,
     ) {}
 
     async findAllComments(photoId: number): Promise<CommentWithUser[]> {
@@ -41,5 +44,15 @@ export class CommentService {
 
     async delete(commentId: number): Promise<void> {
         await this.commentRepository.delete(commentId);
+    }
+
+    async replaceEmails(replaceEmailsParams: ReplaceEmailsParams): Promise<string> {
+        const matchUsers = await this.userService.findAllByEmails(replaceEmailsParams.emails);
+        let comment = replaceEmailsParams.comment;
+
+        for (const matchUser of matchUsers) {
+            comment = comment.replace(`@${matchUser.email}`, matchUser.userName);
+        }
+        return comment;
     }
 }
