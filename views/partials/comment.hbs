@@ -1,0 +1,16 @@
+<div class="card-body">
+    <p class="card-text"><strong>{{userName}}</strong></p>
+    <p class="card-text">{{text}}</p>
+
+    {{#if allowEdit}}
+        <input name="text" id="comment-{{commentId}}" type="text" value="{{text}}" class="form-control"
+               aria-describedby="button-addon4"><br>
+
+        <button type="submit" onclick="updateComment({{commentId}})" id="submit" class="btn btn-outline-success">
+            Update
+        </button>
+        <button type="submit" onclick="deleteComment({{commentId}})" id="submit" class="btn btn-outline-danger">
+            Delete
+        </button>
+    {{/if}}
+</div>

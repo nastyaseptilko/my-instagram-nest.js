@@ -8,26 +8,37 @@ import { CreateUserPayload, UpdateUserPayload, User } from 'src/user/interfaces/
 export class UserService {
     constructor(
         @InjectRepository(UsersEntity)
-        private usersRepository: Repository<UsersEntity>,
+        private userRepository: Repository<UsersEntity>,
     ) {}
 
-    findAll(): Promise<User[]> {
-        return this.usersRepository.find();
+    async findAll(): Promise<User[]> {
+        return await this.userRepository.find();
     }
 
-    findOne(userId: number): Promise<User | undefined> {
-        return this.usersRepository.findOne(userId);
+    async findAllByEmails(emails: string[]): Promise<User[]> {
+        if (emails.length === 0) {
+            return [];
+        }
+        return await this.userRepository
+            .createQueryBuilder('users')
+            .where('users.email IN (:emails)', { emails })
+            .getMany();
+    }
+
+    async findOne(userId: number): Promise<User | undefined> {
+        return await this.userRepository.findOne(userId);
     }
 
     async findOneByEmail(email: string): Promise<User | undefined> {
-        return await this.usersRepository.findOne({ where: { email } });
+        return await this.userRepository.findOne({ where: { email } });
     }
 
     async create(createUser: CreateUserPayload): Promise<void> {
-        await this.usersRepository.insert(createUser);
+        await this.userRepository.insert(createUser);
     }
 
-    update(userId: number, updateUser: UpdateUserPayload) {
-        return this.usersRepository.update(userId, updateUser);
+    async update(userId: number, updateUser: UpdateUserPayload) {
+        const updateResult = await this.userRepository.update(userId, updateUser);
+        return updateResult.affected !== 0;
     }
 }

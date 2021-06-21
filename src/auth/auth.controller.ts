@@ -15,7 +15,7 @@ import { User } from 'src/user/interfaces/user.interfaces';
 import * as jwt from 'jsonwebtoken';
 import { ResolveToken, Token } from 'src/auth/interfaces/auth.interfaces';
 
-@ApiTags('Auth controller')
+@ApiTags('Auth')
 @Controller('/')
 export class AuthController {
     constructor(
