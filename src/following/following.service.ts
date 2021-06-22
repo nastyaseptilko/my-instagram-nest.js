@@ -12,7 +12,7 @@ export class FollowingService {
 
         return publishers.map((el: FollowersAndUserFieldsFromDatabase) => ({
             followingId: el.following_follow_id,
-            userNamePublisher: el.u_user_name,
+            nicknamePublisher: el.u_nickname,
             publisherId: el.following_publisher_id,
         }));
     }

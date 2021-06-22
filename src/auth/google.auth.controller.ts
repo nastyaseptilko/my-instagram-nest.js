@@ -18,7 +18,7 @@ export class GoogleAuthController {
     async googleAuth(@Req() req: AuthenticatedRequestViaGoogle, @Res() res: Response) {
         const userProfile = { user: req.user } as GoogleLoginResult;
         const email = req.user.email;
-        const userName = userProfile.user.userName;
+        const nickname = userProfile.user.nickname;
         const idToken = userProfile.user.idToken;
 
         const user = await this.userService.findUserByEmail(email);
@@ -28,7 +28,7 @@ export class GoogleAuthController {
             res.redirect('/');
         } else {
             await this.userService.create({
-                userName,
+                nickname: nickname,
                 email,
             });
             res.redirect('/login');

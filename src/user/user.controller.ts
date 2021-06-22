@@ -62,8 +62,8 @@ export class UserController {
         } else {
             const hash = await this.authService.hashPassword(createUserDto);
             await this.userService.create({
-                name: createUserDto.name,
-                userName: createUserDto.userName,
+                fullName: createUserDto.fullName,
+                nickname: createUserDto.nickname,
                 webSite: createUserDto.webSite,
                 bio: createUserDto.bio,
                 email: createUserDto.email,

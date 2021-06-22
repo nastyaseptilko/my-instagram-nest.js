@@ -9,7 +9,7 @@ export class SearchRepository {
     async findAllUsers(search: string, currentUserId: number): Promise<ResultSearchUser[]> {
         return await getRepository(UsersEntity)
             .createQueryBuilder('users')
-            .where('users.user_name like :search', { search: `%${search}%` })
+            .where('users.nickname like :search', { search: `%${search}%` })
             .andWhere('users.user_id != :currentUserId')
             .andWhere(qb => {
                 const followingQuery = qb

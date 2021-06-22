@@ -7,7 +7,6 @@ import {
     AuthenticatedRequestViaGoogle,
     AuthenticatedRequestViaLocalIDP,
     DecodedUser,
-    ResolvedDecodedUser,
     Secret,
 } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 
@@ -39,8 +38,8 @@ export class AuthMiddleware implements NestMiddleware {
 function verifyJwt(token: string, secret: Secret): Promise<DecodedUser> {
     return new Promise<DecodedUser>((resolve, reject) => {
         jwt.verify(token, secret, (err, decoded) => {
-            if (err) reject(err);
-            else resolve(decoded as ResolvedDecodedUser);
+            if (decoded) resolve(decoded);
+            else reject(err);
         });
     });
 }
@@ -69,7 +68,7 @@ async function googleAuth(
     if (payload && payload.email) {
         (req as AuthenticatedRequestViaGoogle).user = {
             id: userId,
-            name: {
+            fullName: {
                 familyName: payload.family_name,
                 givenName: payload.given_name,
             },

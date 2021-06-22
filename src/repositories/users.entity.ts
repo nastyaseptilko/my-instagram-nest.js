@@ -6,14 +6,14 @@ export class UsersEntity {
     @PrimaryGeneratedColumn({ name: 'user_id' })
     id!: number;
 
-    @Column({ name: 'name', length: 100, nullable: true })
+    @Column({ name: 'full_name', length: 100, nullable: true })
     @IsString()
-    name!: string;
+    fullName!: string;
 
-    @Column({ name: 'user_name', length: 30 })
+    @Column({ name: 'nickname', length: 30 })
     @IsString()
     @IsNotEmpty()
-    userName!: string;
+    nickname!: string;
 
     @Column({ name: 'web_site', nullable: true })
     @IsString()

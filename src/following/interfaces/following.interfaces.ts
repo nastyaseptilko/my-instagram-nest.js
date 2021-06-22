@@ -6,7 +6,7 @@ export type Followers = {
 
 export type FollowersWithUser = {
     followingId: number;
-    userNamePublisher: string;
+    nicknamePublisher: string;
     publisherId: number;
 };
 

@@ -19,7 +19,7 @@ export type PhotoWithFollowing = {
     caption: string | null;
     imageUrl: string;
     filter: string | null;
-    userName: string;
+    nickname: string;
 };
 
 export type PhotoUpdatePayload = {

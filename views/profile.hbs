@@ -1,8 +1,8 @@
 <div style='overflow-y: hidden; float: left; '>
     <div class="card border-info mb-3" style="max-width: 20rem; margin-left: 5%">
-        <div class="card-header">{{user.userName}}</div>
+        <div class="card-header">{{user.nickname}}</div>
         <div class="card-body">
-            <h5 class="card-title">{{user.name}}</h5>
+            <h5 class="card-title">{{user.fullName}}</h5>
             <p class="card-text">{{user.webSite}}</p>
             <p class="card-text">{{user.bio}}</p>
         </div>
@@ -12,12 +12,12 @@
         <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
             <h6>Edit information about profile:</h6>
             <div class="form-group ">
-                <span>Name:</span>
-                <input type="text" name="name" id="name-{{user.id}}" value="{{user.name}}" class="form-control">
+                <span>Full name:</span>
+                <input type="text" name="fullName" id="fullName-{{user.id}}" value="{{user.fullName}}" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">@</span>
-                <input type="text" name="userName" id="userName-{{user.id}}" value="{{user.userName}}"
+                <input type="text" name="nickname" id="nickname-{{user.id}}" value="{{user.nickname}}"
                        class="form-control"
                        aria-label="Username" aria-describedby="basic-addon1">
             </div>
@@ -76,7 +76,7 @@
     {{#each photos}}
         <div class="card"
              style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
-            {{>photo this ownProfile=@root.ownProfile isProfilePage=@root.isProfilePage userName=@root.user.userName}}
+            {{>photo this ownProfile=@root.ownProfile isProfilePage=@root.isProfilePage nickname=@root.user.nickname noAllowedToGoToProfile=@root.noAllowedToGoToProfile}}
         </div>
     {{/each}}
 </div>

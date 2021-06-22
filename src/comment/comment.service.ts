@@ -22,7 +22,7 @@ export class CommentService {
         return comments.map((comment: CommentAndUserFieldsFromDatabase) => ({
             commentId: comment.comments_comment_id,
             text: comment.comments_text,
-            userName: comment.u_user_name,
+            nickname: comment.u_nickname,
             userId: comment.u_user_id,
         }));
     }
@@ -44,7 +44,7 @@ export class CommentService {
         let comment = replaceEmailsParams.comment;
 
         for (const matchUser of matchUsers) {
-            comment = comment.replace(`@${matchUser.email}`, matchUser.userName);
+            comment = comment.replace(`@${matchUser.email}`, matchUser.nickname);
         }
         return comment;
     }

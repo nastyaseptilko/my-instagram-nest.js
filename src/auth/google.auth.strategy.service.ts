@@ -30,7 +30,7 @@ function verify(
 ) {
     const user = {
         email: profile._json.email,
-        userName: `${profile.name?.givenName}` + `${profile.name?.familyName}`,
+        nickname: `${profile.name?.givenName}` + `${profile.name?.familyName}`,
         idToken: params.id_token,
     };
 

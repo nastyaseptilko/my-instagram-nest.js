@@ -1,7 +1,7 @@
 export type ResultSearchUser = {
     id: number;
-    name: string | null;
-    userName: string;
+    fullName: string | null;
+    nickname: string;
     webSite: string | null;
     bio: string | null;
     email: string;

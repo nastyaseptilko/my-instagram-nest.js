@@ -6,7 +6,6 @@ import { Response } from 'express';
 import { LoginUserDto } from 'src/auth/dto/login.user.dto';
 import { User } from 'src/user/interfaces/user.interfaces';
 import * as jwt from 'jsonwebtoken';
-import { ResolvedToken, Token } from 'src/auth/interfaces/auth.interfaces';
 import { Logger } from 'src/logger/logger.service';
 
 @ApiTags('Auth')
@@ -85,9 +84,9 @@ export class AuthController {
 
 export function generateAccessToken(user: { user?: User }, secret: jwt.Secret): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        jwt.sign(user, secret, (err: Error | null, token: Token) => {
-            if (err) reject(err);
-            else resolve(token as ResolvedToken);
+        jwt.sign(user, secret, (err, token) => {
+            if (token) resolve(token);
+            else reject(err);
         });
     });
 }

@@ -1,14 +1,23 @@
-<h5 class="card-title">{{userName}}</h5>
+<h5 class="card-title">
+    {{#if allowedToGoToProfile}}
+        <a href='/api/profile/{{userId}}'>{{nickname}}</a>
+    {{/if}}
+
+    {{#if noAllowedToGoToProfile}}
+        {{nickname}}
+    {{/if}}
+</h5>
 <figure class="{{filter}}" id='figure'>
     <img src="{{imageUrl}}" class="card-img-top" alt="...">
 </figure>
 
 {{#if ownProfile}}
-<div style="padding: 1rem">
-    <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo" class="form-control"> <br>
-    <button class="btn btn-warning" onclick='updatePhoto({{id}})'>Save updates</button>
-    <button class="btn btn-danger" onclick='deletePhoto({{id}})'>Delete photo</button>
-</div>
+    <div style="padding: 1rem">
+        <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo"
+               class="form-control"> <br>
+        <button class="btn btn-warning" onclick='updatePhoto({{id}})'>Save updates</button>
+        <button class="btn btn-danger" onclick='deletePhoto({{id}})'>Delete photo</button>
+    </div>
 {{/if}}
 
 <div class="card-body">
@@ -16,15 +25,15 @@
 </div>
 
 {{#if isProfilePage}}
-<div class="card-body">
-    <form action="/api/comment/{{id}}" method="post" style="" target="hiddenFrame">
-        <div>
-            <input name='text' type="text" placeholder="Enter your comment" class="form-control" required><br>
-            <button type="submit" id="submit" class="btn btn-info">Send comment</button>
-        </div>
-    </form>
-    <br>
-    <a href="/api/comment/{{id}}" class="btn btn-primary">Get comments</a>
-</div>
+    <div class="card-body">
+        <form action="/api/comment/{{id}}" method="post" style="" target="hiddenFrame">
+            <div>
+                <input name='text' type="text" placeholder="Enter your comment" class="form-control" required><br>
+                <button type="submit" id="submit" class="btn btn-info">Send comment</button>
+            </div>
+        </form>
+        <br>
+        <a href="/api/comment/{{id}}" class="btn btn-primary">Get comments</a>
+    </div>
 {{/if}}
 <hr>

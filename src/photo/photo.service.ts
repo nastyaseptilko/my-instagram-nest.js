@@ -25,7 +25,7 @@ export class PhotoService {
             caption: photo.photos_caption,
             imageUrl: photo.photos_image_url,
             filter: photo.photos_filter,
-            userName: photo.u_user_name,
+            nickname: photo.u_nickname,
         }));
     }
 

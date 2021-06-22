@@ -26,9 +26,9 @@ function resultSearch() {
                     buttonFollow.onclick = () => follow(el.id);
 
                     a.setAttribute('value', el.id);
-                    if (el.userName) {
+                    if (el.nickname) {
                         a.setAttribute('href', `/api/profile/${el.id}`);
-                        a.innerText = el.userName;
+                        a.innerText = el.nickname;
                         empty.innerText = ' ';
                     }
 
@@ -66,8 +66,8 @@ function updateProfile(userId) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            name: document.getElementById(`name-${userId}`).value,
-            userName: document.getElementById(`userName-${userId}`).value,
+            fullName: document.getElementById(`fullName-${userId}`).value,
+            nickname: document.getElementById(`nickname-${userId}`).value,
             webSite: document.getElementById(`webSite-${userId}`).value,
             bio: document.getElementById(`bio-${userId}`).value,
         }),

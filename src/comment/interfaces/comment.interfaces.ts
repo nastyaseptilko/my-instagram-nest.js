@@ -18,7 +18,7 @@ export type UpdateCommentPayload = {
 export type CommentWithUser = {
     commentId: number;
     text: string;
-    userName: string;
+    nickname: string;
     userId: number;
 };
 

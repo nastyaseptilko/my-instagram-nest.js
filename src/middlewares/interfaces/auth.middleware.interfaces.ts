@@ -12,7 +12,7 @@ export type RequestUser = {
 export type RequestGoogleAuthForUser = {
     user: {
         id: number;
-        name: {
+        fullName: {
             familyName?: string;
             givenName?: string;
         };
@@ -34,5 +34,3 @@ export type DecodedUser = {
 };
 
 export type Secret = jwt.Secret | jwt.GetPublicKeyOrSecret;
-
-export type ResolvedDecodedUser = DecodedUser | PromiseLike<DecodedUser>;
