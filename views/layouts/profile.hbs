@@ -36,8 +36,8 @@
                 if (search) {
                     search.forEach(el => {
                         const a = document.createElement('a');
-                        const empty = document.createElement('p')
-                        const buttonFollow = document.createElement('button')
+                        const empty = document.createElement('p');
+                        const buttonFollow = document.createElement('button');
                         buttonFollow.innerText = 'follow';
                         buttonFollow.className = 'btn btn-success';
                         buttonFollow.onclick = () => follow(el.id);
@@ -84,7 +84,7 @@
                 name: document.getElementById(`name-${userId}`).value,
                 userName: document.getElementById(`userName-${userId}`).value,
                 webSite: document.getElementById(`webSite-${userId}`).value,
-                bio: document.getElementById(`bio-${userId}`).value
+                bio: document.getElementById(`bio-${userId}`).value,
             }),
         };
         fetch(`/api/profile/${userId}`, options);
@@ -102,6 +102,20 @@
             method: 'DELETE', headers: { 'Content-Type': 'application/json' },
         };
         fetch(`/api/unfollow/${followingId}`, options);
+    }
+
+    async function getLikes(photoId) {
+        let options = {
+            method: 'GET',
+        };
+
+        await fetch(`/api/likes/${photoId}`, options).then(response => response.json()).then(response => {
+            const div = document.getElementById('countLikes');
+
+            const likes = document.createElement('span');
+            likes.innerText = `Likes: ${response.likesCount}`;
+            div.appendChild(likes);
+        });
     }
 
 </script>

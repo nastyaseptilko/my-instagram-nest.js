@@ -76,7 +76,7 @@
     {{#each photos}}
         <div class="card"
              style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
-            {{>photo this ownProfile=@root.ownProfile}}
+            {{>photo this ownProfile=@root.ownProfile countLikes=@root.countLikes allowViewLikesCount=@root.allowViewLikesCount}}
         </div>
     {{/each}}
 </div>
