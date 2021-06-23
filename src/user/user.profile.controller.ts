@@ -37,6 +37,7 @@ export class UserProfileController {
                 user: user,
                 ownProfile: req.user.id === targetUserId,
                 allowViewPublishers: publishers,
+                allowViewLikesCount: true,
                 publishers: publishers,
                 message: '',
                 photos,

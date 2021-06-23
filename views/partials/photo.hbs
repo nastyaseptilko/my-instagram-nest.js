@@ -4,11 +4,19 @@
 </figure>
 
 {{#if ownProfile}}
-<div style="padding: 1rem">
-    <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo" class="form-control"> <br>
-    <button class="btn btn-warning" onclick='updatePhoto({{id}})'>Save updates</button>
-    <button class="btn btn-danger" onclick='deletePhoto({{id}})'>Delete photo</button>
-</div>
+    <div style="padding: 1rem">
+        <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo"
+               class="form-control"> <br>
+        <button class="btn btn-warning" onclick='updatePhoto({{id}})'>Save updates</button>
+        <button class="btn btn-danger" onclick='deletePhoto({{id}})'>Delete photo</button>
+    </div>
+{{/if}}
+
+{{#if allowViewLikesCount}}
+    <div style='padding: 1rem'>
+        <button type="button" class="btn btn-outline-dark btn-sm" onclick='getLikes({{id}})'>See the number of likes under this photo</button>
+    </div>
+    <div style='padding: 1rem' id='countLikes'></div>
 {{/if}}
 
 <div class="card-body">
@@ -22,3 +30,14 @@
     <br>
     <a href="/api/comment/{{id}}" class="btn btn-primary">Get comments</a>
 </div>
+
+{{#if allowLiked}}
+    <button class="btn btn-outline-danger" onclick='likeAndDislike({{photoId}})'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
+             viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+        </svg>
+    </button>
+{{/if}}
+<hr>
+

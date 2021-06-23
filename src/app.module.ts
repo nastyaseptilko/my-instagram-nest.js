@@ -9,6 +9,7 @@ import { PhotoModule } from 'src/photo/photo.module';
 import { FollowingModule } from 'src/following/following.module';
 import { SearchModule } from 'src/search/search.module';
 import { CommentModule } from 'src/comment/comment.module';
+import { LikeModule } from 'src/like/like.module';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { CommentModule } from 'src/comment/comment.module';
         FollowingModule,
         SearchModule,
         CommentModule,
+        LikeModule,
     ],
     controllers: [HomeController],
 })

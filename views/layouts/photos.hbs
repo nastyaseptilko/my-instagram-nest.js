@@ -30,8 +30,8 @@
             const reader = new FileReader();
             reader.onload = e => {
                 const newPhoto = document.getElementById('newPhoto');
-                newPhoto.setAttribute('src', e.target.result)
-                newPhoto.setAttribute('data-name', inputFile.files[0].name)
+                newPhoto.setAttribute('src', e.target.result);
+                newPhoto.setAttribute('data-name', inputFile.files[0].name);
                 newPhoto.classList.remove('photo-hidden');
             };
             reader.readAsDataURL(inputFile.files[0]);
@@ -48,9 +48,9 @@
 
         const formData = new FormData();
         formData.append(
-            "image",
+            'image',
             await urlToBase64(newPhoto.getAttribute('src')),
-            newPhoto.getAttribute('data-name')
+            newPhoto.getAttribute('data-name'),
         );
         formData.append('caption', caption.value);
         formData.append('filter', figure.className);
@@ -64,6 +64,21 @@
     async function urlToBase64(url) {
         return fetch(url).then(res => res.blob());
     }
+
+    function likeAndDislike(id) {
+        fetch('/api/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                photoId: Number(id),
+            }),
+        }).then(response => response.json()).then(response => {
+            alert(response.message);
+        });
+    }
+
 </script>
 </body>
 </html>

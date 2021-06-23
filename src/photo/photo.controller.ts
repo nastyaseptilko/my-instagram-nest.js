@@ -59,6 +59,7 @@ export class PhotoController {
             title: 'Photos',
             layout: 'photos',
             photos: photos,
+            allowLiked: true,
         });
     }
 
