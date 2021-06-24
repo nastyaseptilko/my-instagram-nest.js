@@ -17,10 +17,16 @@ export type FollowingAndUserFieldsFromDatabase = {
     u_password: string | null;
 };
 
-export type FollowingWithUser = {
+export type PublisherPayload = {
     followingId: number;
     userNamePublisher: string;
     publisherId: number;
+};
+
+export type SubscriberPayload = {
+    publisherId: number;
+    userNameSubscriber: string;
+    subscriberId: number;
 };
 
 export type IdsForFollowing = {

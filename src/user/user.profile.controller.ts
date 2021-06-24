@@ -20,7 +20,7 @@ export class UserProfileController {
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getProfile(
+    async getProfilePage(
         @Req() req: AuthenticatedRequest,
         @Res() res: Response,
         @Param('userId') userId?: number,
@@ -28,6 +28,7 @@ export class UserProfileController {
         const targetUserId = userId || req.user.id;
         const user = await this.userService.findOne(targetUserId);
         const publishers = await this.followingService.findAllPublishers(req.user.id);
+        const subscribers = await this.followingService.findAllSubscribers(req.user.id);
 
         if (user) {
             const photos = await this.photoService.findAll(targetUserId);
@@ -37,8 +38,10 @@ export class UserProfileController {
                 user: user,
                 ownProfile: req.user.id === targetUserId,
                 allowViewPublishers: publishers,
+                allowViewSubscribers: subscribers,
                 allowViewLikesCount: true,
-                publishers: publishers,
+                publishers,
+                subscribers,
                 message: '',
                 photos,
             };

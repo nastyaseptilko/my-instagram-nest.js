@@ -42,7 +42,7 @@
         <div>
             {{#if  allowViewPublishers}}
                 <h6 style="margin-left: 5%">Your publishers:</h6>
-                <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
+                <div class="card border-info mb-3" style="overflow: auto; height: 15rem; max-width: 50rem; padding: 1rem; margin-left: 5%">
                     {{#each publishers}}
                         {{>publisher}}
                     {{/each}}
@@ -50,6 +50,16 @@
             {{/if}}
         </div>
 
+        <div>
+            {{#if allowViewSubscribers}}
+                <h6 style="margin-left: 5%">Your subscribers:</h6>
+                <div class="card border-info mb-3" style="overflow: auto; height: 15rem; max-width: 50rem; padding: 1rem; margin-left: 5%">
+                    {{#each subscribers}}
+                        {{>subscriber}}
+                    {{/each}}
+                </div>
+            {{/if}}
+        </div>
 
         <div style="margin-left: 5%" class="block-left">
             <input type="text" name="search" class="form-control input-search" placeholder="Search users..." required>
