@@ -1,28 +1,27 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LikesEntity } from 'src/repositories/likes.entity';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { PhotosEntity } from 'src/repositories/photos.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
-import { UserService } from 'src/user/user.service';
+import { CommentsEntity } from 'src/repositories/comments.entity';
+import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as hbs from 'express-handlebars';
 import { join } from 'path';
-import * as jwt from 'jsonwebtoken';
 import * as session from 'express-session';
-import { ValidationPipe } from '@nestjs/common';
-import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import * as request from 'supertest';
-import { CommentsEntity } from 'src/repositories/comments.entity';
-import { CommentController } from 'src/comment/comment.controller';
-import { CommentService } from 'src/comment/comment.service';
-import { CommentModule } from 'src/comment/comment.module';
-import { LikesEntity } from 'src/repositories/likes.entity';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { NextFunction, Response } from 'express';
+import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import * as jwt from 'jsonwebtoken';
+import * as request from 'supertest';
+import { PhotoModule } from 'src/photo/photo.module';
+import { PhotoService } from 'src/photo/photo.service';
+import { PhotoController } from 'src/photo/photo.controller';
 
-describe('Comment', () => {
+describe('Photo', () => {
     let app: NestExpressApplication;
     let token: string;
 
@@ -32,8 +31,8 @@ describe('Comment', () => {
                 ConfigModule.forRoot({
                     envFilePath: '.env',
                 }),
-                TypeOrmModule.forFeature([UsersEntity, CommentsEntity]),
-                CommentModule,
+                TypeOrmModule.forFeature([PhotosEntity]),
+                PhotoModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -51,10 +50,13 @@ describe('Comment', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [ConfigService, UserService, CommentService],
-            controllers: [CommentController],
+            providers: [PhotoService],
+            controllers: [PhotoController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
+
+        app.useGlobalPipes(new ValidationPipe());
+        app.use(cookieParser());
 
         app.set('view engine', 'hbs');
         app.engine(
@@ -67,8 +69,6 @@ describe('Comment', () => {
         );
         app.use(session({ secret: process.env.JWT_SECRET as string }));
 
-        app.useGlobalPipes(new ValidationPipe());
-        app.use(cookieParser());
         app.use('/api', (req: AuthenticatedRequest, res: Response, next: NextFunction) =>
             new AuthMiddleware().use(req, res, next),
         );
@@ -78,9 +78,9 @@ describe('Comment', () => {
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
     });
 
-    it(`GET comments`, async () => {
+    it(`GET photo`, async () => {
         const result = await request(app.getHttpServer())
-            .get('/api/comment/1')
+            .get('/api/photo')
             .set('Cookie', `token=${token};`)
             .send();
 
@@ -88,60 +88,57 @@ describe('Comment', () => {
         expect(result.type).toBe('text/html');
     });
 
-    it(`POST comment`, async () => {
+    it(`GET photos`, async () => {
         const result = await request(app.getHttpServer())
-            .post('/api/comment/1')
-            .send({ text: 'text text text' })
-            .set('Cookie', `token=${token};`);
+            .get('/api/photos')
+            .set('Cookie', `token=${token};`)
+            .send();
+
+        expect(result.status).toBe(200);
+        expect(result.type).toBe('text/html');
+    });
+
+    it(`POST publish photo`, async () => {
+        const result = await request(app.getHttpServer())
+            .post('/api/photo/upload')
+            .send({ imageUrl: '/1.jpg', caption: 'test', filter: 'none' })
+            .set('Cookie', `token=${token};`)
+            .send();
 
         expect(result.status).toBe(201);
+        expect(result.type).toBe('text/html');
     });
 
-    it(`POST comment. Expected status 400 on validation error `, async () => {
+    it(`PUT photo`, async () => {
         const result = await request(app.getHttpServer())
-            .post('/api/comment/1')
-            .send({ text: 123456789 })
-            .set('Cookie', `token=${token};`);
-
-        expect(result.status).toBe(400);
-        expect(result.body).toEqual({
-            statusCode: 400,
-            message: ['text must be a string'],
-            error: 'Bad Request',
-        });
-        expect(result.type).toBe('application/json');
-    });
-
-    it(`PUT comment`, async () => {
-        const result = await request(app.getHttpServer())
-            .put('/api/comment/1')
+            .put('/api/photo/1')
             .send({
-                text: 'Test',
+                caption: 'Test',
             })
             .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(200);
     });
 
-    it(`PUT comment. Expected status 400 on validation error`, async () => {
+    it(`PUT photo. Expected status 400 on validation error`, async () => {
         const result = await request(app.getHttpServer())
-            .put('/api/comment/1')
+            .put('/api/photo/1')
             .send({
-                text: 1234567,
+                caption: 1234567,
             })
             .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(400);
         expect(result.body).toEqual({
             error: 'Bad Request',
-            message: ['text must be a string'],
+            message: ['caption must be a string'],
             statusCode: 400,
         });
     });
 
-    it(`DELETE comment`, async () => {
+    it(`DELETE photo`, async () => {
         const result = await request(app.getHttpServer())
-            .delete('/api/comment/3')
+            .delete('/api/photo/2')
             .set('Cookie', `token=${token};`)
             .send();
 
