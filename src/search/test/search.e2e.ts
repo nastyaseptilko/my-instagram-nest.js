@@ -86,5 +86,27 @@ describe('Search', () => {
 
         expect(result.status).toBe(200);
         expect(result.type).toBe('application/json');
+        expect(result.body).toEqual([
+            {
+                id: 3,
+                name: 'tt',
+                userName: 'tt',
+                webSite: 'tt',
+                bio: 'tt',
+                email: 'tt@mail.ru',
+                password: 'qwerty',
+            },
+        ]);
+    });
+
+    it(`GET empty array search result`, async () => {
+        const result = await request(app.getHttpServer())
+            .get('/api/search?search=invalidData')
+            .set('Cookie', `token=${token};`)
+            .send();
+
+        expect(result.status).toBe(200);
+        expect(result.type).toBe('application/json');
+        expect(result.body).toEqual([]);
     });
 });
