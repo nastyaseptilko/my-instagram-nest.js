@@ -1,11 +1,8 @@
 <h5 class="card-title">
-    {{#if allowedToGoToProfile}}
+    {{#if isAllowedToGoToProfile}}
         <a href='/api/profile/{{userId}}'>{{nickname}}</a>
     {{/if}}
 
-    {{#if noAllowedToGoToProfile}}
-        {{nickname}}
-    {{/if}}
 </h5>
 <figure class="{{filter}}" id='figure'>
     <img src="{{imageUrl}}" class="card-img-top" alt="...">

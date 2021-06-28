@@ -20,9 +20,9 @@ export class FollowingRepository {
             .getRawMany();
     }
 
-    async findFollowers(idsForFollowing: IdsForFollowers): Promise<Followers[]> {
+    async findFollowers(idsForFollowers: IdsForFollowers): Promise<Followers[]> {
         return await this.followingRepository.find({
-            where: { subscriber: idsForFollowing.subscriber, publisher: idsForFollowing.publisher },
+            where: { subscriber: idsForFollowers.subscriber, publisher: idsForFollowers.publisher },
         });
     }
 

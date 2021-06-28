@@ -38,7 +38,7 @@ export class UserProfileController {
                 ownProfile: req.user.id === targetUserId,
                 allowViewPublishers: publishers,
                 isProfilePage: true,
-                noAllowedToGoToProfile: true,
+                isAllowedToGoToProfile: false,
                 publishers: publishers,
                 message: '',
                 photos,

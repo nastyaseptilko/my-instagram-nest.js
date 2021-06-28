@@ -17,11 +17,11 @@ export class FollowingService {
         }));
     }
 
-    async follow(idsForFollowing: IdsForFollowers): Promise<void> {
-        const followers = await this.followingRepository.findFollowers(idsForFollowing);
+    async follow(idsForFollowers: IdsForFollowers): Promise<void> {
+        const followers = await this.followingRepository.findFollowers(idsForFollowers);
 
         if (followers.length === 0) {
-            await this.followingRepository.create(idsForFollowing);
+            await this.followingRepository.create(idsForFollowers);
         } else {
             throw new Error('You are already following this person');
         }
