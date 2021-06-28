@@ -5,8 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { PhotosEntity } from 'src/repositories/photos.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
+import { UserModule } from 'src/user/user.module';
 import { CommentsEntity } from 'src/repositories/comments.entity';
 import { LikesEntity } from 'src/repositories/likes.entity';
+import { UserService } from 'src/user/user.service';
+import { UserController } from 'src/user/user.controller';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as hbs from 'express-handlebars';
@@ -16,15 +19,9 @@ import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware
 import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
-import { UserService } from 'src/user/user.service';
-import { PhotoService } from 'src/photo/photo.service';
-import { FollowingService } from 'src/following/following.service';
-import { UserModule } from 'src/user/user.module';
-import { UserController } from 'src/user/user.controller';
-import { UserProfileController } from 'src/user/user.profile.controller';
 import * as request from 'supertest';
 
-describe('User profile', () => {
+describe('User', () => {
     let app: NestExpressApplication;
     let token: string;
 
@@ -34,7 +31,7 @@ describe('User profile', () => {
                 ConfigModule.forRoot({
                     envFilePath: '.env',
                 }),
-                TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]),
+                TypeOrmModule.forFeature([UsersEntity]),
                 UserModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
@@ -53,8 +50,8 @@ describe('User profile', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [UserService, PhotoService, FollowingService],
-            controllers: [UserController, UserProfileController],
+            providers: [UserService],
+            controllers: [UserController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
 
@@ -81,68 +78,80 @@ describe('User profile', () => {
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
     });
 
-    it(`GET user profile if the user found`, async () => {
+    it(`GET users`, async () => {
         const result = await request(app.getHttpServer())
-            .get('/api/profile/1')
-            .set('Cookie', `token=${token};`)
-            .send();
+            .get('/api/users')
+            .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(200);
-        expect(result.type).toBe('text/html');
+        expect(result.type).toBe('application/json');
     });
 
-    it(`GET user profile if user navigates to their profile`, async () => {
+    it(`GET user`, async () => {
         const result = await request(app.getHttpServer())
-            .get('/api/profile')
-            .set('Cookie', `token=${token};`)
-            .send();
+            .get('/api/user/1')
+            .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(200);
-        expect(result.type).toBe('text/html');
+        expect(result.type).toBe('application/json');
     });
 
-    it(`GET user profile if the user does not exist`, async () => {
+    it(`GET user. Expected status 404 the user does not exist`, async () => {
         const result = await request(app.getHttpServer())
-            .get('/api/profile/99999999')
-            .set('Cookie', `token=${token};`)
-            .send();
+            .get('/api/user/9999999')
+            .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(404);
         expect(result.type).toBe('application/json');
         expect(result.body).toEqual({
             error: 'Not Found',
-            message: 'User does not exist',
+            message: 'The user does not exist',
             statusCode: 404,
         });
     });
 
-    it(`PUT user profile`, async () => {
+    it(`POST user`, async () => {
         const result = await request(app.getHttpServer())
-            .put('/api/profile/1')
+            .post('/api/user')
+            .set('Cookie', `token=${token};`)
             .send({
-                name: 'Test',
-                userName: 'testing23',
-                webSite: 'https://jestjs.io/',
-                bio: 'Hello test case',
-            })
-            .set('Cookie', `token=${token};`);
+                name: 'Jest',
+                userName: 'jestjestjest',
+                webSite: 'none',
+                bio: 'My name is jest',
+                email: 'testJest@test.com',
+                password: 'testing123',
+            });
+
+        expect(result.status).toBe(201);
+    });
+
+    it(`PUT user`, async () => {
+        const result = await request(app.getHttpServer())
+            .put('/api/user/1')
+            .set('Cookie', `token=${token};`)
+            .send({
+                name: 'Test Jest',
+                userName: 'TestTestTest',
+                webSite: 'none',
+                bio: 'My name is jest',
+            });
 
         expect(result.status).toBe(200);
     });
 
-    it(`PUT user profile. Expected status 404 not found user`, async () => {
+    it(`PUT photo. Expected status 404 the user does not update`, async () => {
         const result = await request(app.getHttpServer())
-            .put('/api/profile/9999999')
+            .put('/api/user/9999999')
+            .set('Cookie', `token=${token};`)
             .send({
-                name: 'Test',
-                userName: 'testing23',
-            })
-            .set('Cookie', `token=${token};`);
+                name: 'Test Jest',
+            });
 
         expect(result.status).toBe(404);
         expect(result.body).toEqual({
             error: 'Not Found',
-            message: 'The user does not exist',
+            message: 'The user does not update',
             statusCode: 404,
         });
     });
