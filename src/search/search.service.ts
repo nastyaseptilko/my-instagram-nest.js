@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
+import { User } from 'src/user/interfaces/user.interfaces';
 
 @Injectable()
 export class SearchService {
-    async findUsers(search: string, currentUserId: number) {
-        return await getRepository(UsersEntity)
+    async findUsers(search: string, currentUserId: number): Promise<User[]> {
+        const users = await getRepository(UsersEntity)
             .createQueryBuilder('users')
             .where('users.userName like :search', { search: `%${search}%` })
             .andWhere('users.user_id != :currentUserId')
@@ -21,5 +22,11 @@ export class SearchService {
             })
             .setParameter('currentUserId', currentUserId)
             .getMany();
+
+        if (users.length !== 0) {
+            return users;
+        } else {
+            return [];
+        }
     }
 }

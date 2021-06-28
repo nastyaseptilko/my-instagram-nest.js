@@ -113,6 +113,7 @@ export class AuthController {
                 layout: 'authorization',
                 error: 'Invalid email or password',
             });
+            res.status(400);
         }
     }
 }

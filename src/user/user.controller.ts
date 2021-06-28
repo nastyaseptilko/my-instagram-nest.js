@@ -42,15 +42,15 @@ export class UserController {
         return await this.userService.create(createUserDto);
     }
 
-    @Put('/user')
+    @Put('/user/:userId')
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
     async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
-        const user = await this.userService.update(userId, updateUserDto);
-        if (!user) {
-            throw new NotFoundException('The user does not exist!');
+        const updatedUser = await this.userService.update(userId, updateUserDto);
+        if (!updatedUser) {
+            throw new NotFoundException('The user does not update');
         }
-        return user;
+        return updatedUser;
     }
 }
