@@ -20,10 +20,12 @@ import * as request from 'supertest';
 import { SearchService } from 'src/search/search.service';
 import { SearchController } from 'src/search/search.controller';
 import { SearchModule } from 'src/search/search.module';
+import { Repository } from 'typeorm';
 
 describe('Search', () => {
     let app: NestExpressApplication;
     let token: string;
+    let userRepository: Repository<UsersEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -76,11 +78,39 @@ describe('Search', () => {
         await app.init();
 
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+
+        userRepository = module.get('UsersEntityRepository');
+
+        await userRepository.save([
+            {
+                id: 1,
+                name: 'Test_1',
+                userName: 'test_1',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test1@test.com',
+                password: 'testing123',
+            },
+            {
+                id: 2,
+                name: 'Test_2',
+                userName: 'test_2',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test2@test.com',
+                password: 'testing123',
+            },
+        ]);
+    });
+
+    afterAll(async () => {
+        await userRepository.query(`DELETE FROM users;`);
+        await app.close();
     });
 
     it(`GET search result`, async () => {
         const result = await request(app.getHttpServer())
-            .get('/api/search?search=t')
+            .get('/api/search?search=test')
             .set('Cookie', `token=${token};`)
             .send();
 
@@ -88,13 +118,13 @@ describe('Search', () => {
         expect(result.type).toBe('application/json');
         expect(result.body).toEqual([
             {
-                id: 3,
-                name: 'tt',
-                userName: 'tt',
-                webSite: 'tt',
-                bio: 'tt',
-                email: 'tt@mail.ru',
-                password: 'qwerty',
+                id: 2,
+                name: 'Test_2',
+                userName: 'test_2',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test2@test.com',
+                password: 'testing123',
             },
         ]);
     });

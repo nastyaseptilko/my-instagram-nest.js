@@ -16,15 +16,20 @@ import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware
 import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
-import { LikeModule } from 'src/like/like.module';
 import { LikeService } from 'src/like/like.service';
 import { LikeController } from 'src/like/like.controller';
 import * as request from 'supertest';
 import { LikeRepository } from 'src/like/DAL/like.repository';
+import { Repository } from 'typeorm';
+import { UserModule } from 'src/user/user.module';
+import { PhotoModule } from 'src/photo/photo.module';
 
 describe('Like', () => {
     let app: NestExpressApplication;
     let token: string;
+    let userRepository: Repository<UsersEntity>;
+    let photoRepository: Repository<PhotosEntity>;
+    let likeRepository: Repository<LikesEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -33,7 +38,8 @@ describe('Like', () => {
                     envFilePath: '.env',
                 }),
                 TypeOrmModule.forFeature([LikesEntity]),
-                LikeModule,
+                UserModule,
+                PhotoModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -77,6 +83,39 @@ describe('Like', () => {
         await app.init();
 
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+
+        userRepository = module.get('UsersEntityRepository');
+        photoRepository = module.get('PhotosEntityRepository');
+        likeRepository = module.get('LikesEntityRepository');
+
+        await userRepository.save([
+            {
+                id: 1,
+                name: 'Test_1',
+                userName: 'test_1',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test1@test.com',
+                password: 'testing123',
+            },
+        ]);
+
+        await photoRepository.save([
+            {
+                id: 1,
+                userId: 1,
+                caption: 'test caption',
+                imageUrl: '/1.jpg',
+                filter: 'none',
+            },
+        ]);
+    });
+
+    afterAll(async () => {
+        await photoRepository.query(`DELETE FROM photos;`);
+        await userRepository.query(`DELETE FROM users;`);
+        await likeRepository.query(`DELETE FROM likes;`);
+        await app.close();
     });
 
     it(`GET likes`, async () => {

@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { PhotosEntity } from 'src/repositories/photos.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
-import { UserModule } from 'src/user/user.module';
 import { CommentsEntity } from 'src/repositories/comments.entity';
 import { LikesEntity } from 'src/repositories/likes.entity';
 import { UserService } from 'src/user/user.service';
@@ -34,7 +33,6 @@ describe('User', () => {
                     envFilePath: '.env',
                 }),
                 TypeOrmModule.forFeature([UsersEntity]),
-                UserModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',

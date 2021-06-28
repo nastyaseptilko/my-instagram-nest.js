@@ -17,11 +17,8 @@ import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
-import { PhotoService } from 'src/photo/photo.service';
-import { FollowingService } from 'src/following/following.service';
 import { UserModule } from 'src/user/user.module';
 import { UserController } from 'src/user/user.controller';
-import { UserProfileController } from 'src/user/user.profile.controller';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 
@@ -38,7 +35,7 @@ describe('User profile', () => {
                 ConfigModule.forRoot({
                     envFilePath: '.env',
                 }),
-                TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]),
+                TypeOrmModule.forFeature([UsersEntity]),
                 UserModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
@@ -57,8 +54,8 @@ describe('User profile', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [UserService, PhotoService, FollowingService],
-            controllers: [UserController, UserProfileController],
+            providers: [UserService],
+            controllers: [UserController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
 
@@ -129,8 +126,8 @@ describe('User profile', () => {
     });
 
     afterAll(async () => {
-        await userRepository.query(`DELETE FROM following;`);
-        await userRepository.query(`DELETE FROM photos;`);
+        await followingRepository.query(`DELETE FROM following;`);
+        await photoRepository.query(`DELETE FROM photos;`);
         await userRepository.query(`DELETE FROM users;`);
         await app.close();
     });

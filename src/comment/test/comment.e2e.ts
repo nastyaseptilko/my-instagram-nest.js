@@ -17,14 +17,18 @@ import * as request from 'supertest';
 import { CommentsEntity } from 'src/repositories/comments.entity';
 import { CommentController } from 'src/comment/comment.controller';
 import { CommentService } from 'src/comment/comment.service';
-import { CommentModule } from 'src/comment/comment.module';
 import { LikesEntity } from 'src/repositories/likes.entity';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { NextFunction, Response } from 'express';
+import { Repository } from 'typeorm';
+import { PhotoModule } from 'src/photo/photo.module';
 
 describe('Comment', () => {
     let app: NestExpressApplication;
     let token: string;
+    let userRepository: Repository<UsersEntity>;
+    let photoRepository: Repository<PhotosEntity>;
+    let commentRepository: Repository<CommentsEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -33,7 +37,7 @@ describe('Comment', () => {
                     envFilePath: '.env',
                 }),
                 TypeOrmModule.forFeature([UsersEntity, CommentsEntity]),
-                CommentModule,
+                PhotoModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -76,6 +80,48 @@ describe('Comment', () => {
         await app.init();
 
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+
+        userRepository = module.get('UsersEntityRepository');
+        photoRepository = module.get('PhotosEntityRepository');
+        commentRepository = module.get('CommentsEntityRepository');
+
+        await userRepository.save([
+            {
+                id: 1,
+                name: 'Test_1',
+                userName: 'test_1',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test1@test.com',
+                password: 'testing123',
+            },
+        ]);
+
+        await photoRepository.save([
+            {
+                id: 1,
+                userId: 1,
+                caption: 'test caption',
+                imageUrl: '/1.jpg',
+                filter: 'none',
+            },
+        ]);
+
+        await commentRepository.save([
+            {
+                id: 1,
+                text: 'test comment',
+                userId: 1,
+                photoId: 1,
+            },
+        ]);
+    });
+
+    afterAll(async () => {
+        await commentRepository.query(`DELETE FROM comments;`);
+        await photoRepository.query(`DELETE FROM photos;`);
+        await userRepository.query(`DELETE FROM users;`);
+        await app.close();
     });
 
     it(`GET comments`, async () => {

@@ -17,13 +17,16 @@ import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
 import * as request from 'supertest';
-import { PhotoModule } from 'src/photo/photo.module';
 import { PhotoService } from 'src/photo/photo.service';
 import { PhotoController } from 'src/photo/photo.controller';
+import { Repository } from 'typeorm';
+import { UserModule } from 'src/user/user.module';
 
 describe('Photo', () => {
     let app: NestExpressApplication;
     let token: string;
+    let userRepository: Repository<UsersEntity>;
+    let photoRepository: Repository<PhotosEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +35,7 @@ describe('Photo', () => {
                     envFilePath: '.env',
                 }),
                 TypeOrmModule.forFeature([PhotosEntity]),
-                PhotoModule,
+                UserModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -76,6 +79,44 @@ describe('Photo', () => {
         await app.init();
 
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+
+        userRepository = module.get('UsersEntityRepository');
+        photoRepository = module.get('PhotosEntityRepository');
+
+        await userRepository.save([
+            {
+                id: 1,
+                name: 'Test_1',
+                userName: 'test_1',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test1@test.com',
+                password: 'testing123',
+            },
+        ]);
+
+        await photoRepository.save([
+            {
+                id: 1,
+                userId: 1,
+                caption: 'test caption',
+                imageUrl: '/1.jpg',
+                filter: 'none',
+            },
+            {
+                id: 2,
+                userId: 1,
+                caption: 'test caption',
+                imageUrl: '/2.jpg',
+                filter: 'none',
+            },
+        ]);
+    });
+
+    afterAll(async () => {
+        await photoRepository.query(`DELETE FROM photos;`);
+        await userRepository.query(`DELETE FROM users;`);
+        await app.close();
     });
 
     it(`GET photo`, async () => {

@@ -16,9 +16,15 @@ import * as request from 'supertest';
 import { ValidationPipe } from '@nestjs/common';
 import { PhotosEntity } from 'src/repositories/photos.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
+import { CommentsEntity } from 'src/repositories/comments.entity';
+import { LikesEntity } from 'src/repositories/likes.entity';
+import { Repository } from 'typeorm';
+import { GoogleAuthStrategyService } from 'src/auth/google.auth.strategy.service';
+import { GoogleAuthController } from 'src/auth/google.auth.controller';
 
 describe('Auth', () => {
     let app: NestExpressApplication;
+    let userRepository: Repository<UsersEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +32,7 @@ describe('Auth', () => {
                 ConfigModule.forRoot({
                     envFilePath: '.env',
                 }),
-                TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]),
+                TypeOrmModule.forFeature([UsersEntity]),
                 UserModule,
                 AuthModule,
                 TypeOrmModule.forRoot({
@@ -36,12 +42,18 @@ describe('Auth', () => {
                     username: 'root',
                     password: 'root',
                     database: 'instagram_test',
-                    entities: [UsersEntity, PhotosEntity, FollowingEntity],
+                    entities: [
+                        UsersEntity,
+                        PhotosEntity,
+                        FollowingEntity,
+                        CommentsEntity,
+                        LikesEntity,
+                    ],
                     synchronize: true,
                 }),
             ],
-            providers: [UserService, AuthService],
-            controllers: [AuthController],
+            providers: [AuthService, UserService, GoogleAuthStrategyService],
+            controllers: [AuthController, GoogleAuthController],
         }).compile();
 
         app = module.createNestApplication<NestExpressApplication>();
@@ -60,6 +72,13 @@ describe('Auth', () => {
 
         app.useGlobalPipes(new ValidationPipe());
         await app.init();
+
+        userRepository = module.get('UsersEntityRepository');
+    });
+
+    afterAll(async () => {
+        await userRepository.query(`DELETE FROM users;`);
+        await app.close();
     });
 
     it(`GET page login`, async () => {
