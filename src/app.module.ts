@@ -10,6 +10,7 @@ import { FollowingModule } from 'src/following/following.module';
 import { SearchModule } from 'src/search/search.module';
 import { CommentModule } from 'src/comment/comment.module';
 import { LoggerModule } from 'src/logger/logger.module';
+import { LikeModule } from 'src/like/like.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { LoggerModule } from 'src/logger/logger.module';
         FollowingModule,
         SearchModule,
         CommentModule,
+        LikeModule,
     ],
     controllers: [HomeController],
 })

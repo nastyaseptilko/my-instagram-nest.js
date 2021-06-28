@@ -20,7 +20,7 @@ export class UserProfileController {
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getProfile(
+    async getProfilePage(
         @Req() req: AuthenticatedRequest,
         @Res() res: Response,
         @Param('userId') userId?: number,
@@ -28,6 +28,7 @@ export class UserProfileController {
         const targetUserId = userId || req.user.id;
         const user = await this.userService.findOne(targetUserId);
         const publishers = await this.followingService.findPublishers(req.user.id);
+        const subscribers = await this.followingService.findSubscribers(req.user.id);
 
         if (user) {
             const photos = await this.photoService.findAll(targetUserId);
@@ -39,7 +40,10 @@ export class UserProfileController {
                 allowViewPublishers: publishers,
                 isProfilePage: true,
                 isAllowedToGoToProfile: false,
-                publishers: publishers,
+                allowViewSubscribers: subscribers,
+                allowViewLikesCount: true,
+                publishers,
+                subscribers,
                 message: '',
                 photos,
             };
@@ -57,10 +61,10 @@ export class UserProfileController {
     @ApiOkResponse()
     @ApiNotFoundResponse()
     async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
-        const user = await this.userService.update(userId, updateUserDto);
-        if (!user) {
-            throw new NotFoundException('The user does not exist!');
+        const updatedUser = await this.userService.update(userId, updateUserDto);
+        if (!updatedUser) {
+            throw new NotFoundException('The user does not exist');
         }
-        return user;
+        return updatedUser;
     }
 }

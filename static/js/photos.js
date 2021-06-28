@@ -42,3 +42,19 @@ async function createPhoto() {
 async function urlToBase64(url) {
     return fetch(url).then(res => res.blob());
 }
+
+function likeAndDislike(id) {
+    fetch('/api/like', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            photoId: Number(id),
+        }),
+    })
+        .then(response => response.json())
+        .then(response => {
+            alert(response.message);
+        });
+}

@@ -90,3 +90,19 @@ function unfollow(followingId) {
     };
     fetch(`/api/unfollow/${followingId}`, options);
 }
+
+async function getLikes(photoId) {
+    let options = {
+        method: 'GET',
+    };
+
+    await fetch(`/api/likes/${photoId}`, options)
+        .then(response => response.json())
+        .then(response => {
+            const div = document.getElementById('countLikes');
+
+            const likes = document.createElement('span');
+            likes.innerText = `Likes: ${response.likesCount}`;
+            div.appendChild(likes);
+        });
+}

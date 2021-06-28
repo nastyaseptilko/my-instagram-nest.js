@@ -17,6 +17,13 @@
     </div>
 {{/if}}
 
+{{#if allowViewLikesCount}}
+    <div style='padding: 1rem'>
+        <button type="button" class="btn btn-outline-dark btn-sm" onclick='getLikes({{id}})'>See the number of likes under this photo</button>
+    </div>
+    <div style='padding: 1rem' id='countLikes'></div>
+{{/if}}
+
 <div class="card-body">
     <p class="card-text"><strong>Description to the photo: </strong>{{caption}}</p>
 </div>
@@ -34,3 +41,14 @@
     </div>
 {{/if}}
 <hr>
+
+{{#if allowLiked}}
+    <button class="btn btn-outline-danger" onclick='likeAndDislike({{photoId}})'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
+             viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+        </svg>
+    </button>
+{{/if}}
+<hr>
+

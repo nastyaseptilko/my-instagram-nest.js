@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IdsForFollowers, FollowersWithUser } from 'src/following/interfaces/following.interfaces';
+import {
+    IdsForFollowers,
+    SubscriberPayload,
+    PublisherPayload,
+} from 'src/following/interfaces/following.interfaces';
 import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
 import { FollowingRepository } from 'src/following/DAL/following.repository';
 
@@ -7,13 +11,23 @@ import { FollowingRepository } from 'src/following/DAL/following.repository';
 export class FollowingService {
     constructor(private readonly followingRepository: FollowingRepository) {}
 
-    async findPublishers(userId: number): Promise<FollowersWithUser[]> {
-        const publishers = await this.followingRepository.findAllPublishers(userId);
+    async findPublishers(userId: number): Promise<PublisherPayload[]> {
+        const publishers = await this.followingRepository.findPublishers(userId);
 
         return publishers.map((el: FollowersAndUserFieldsFromDatabase) => ({
             followingId: el.following_follow_id,
             nicknamePublisher: el.u_nickname,
             publisherId: el.following_publisher_id,
+        }));
+    }
+
+    async findSubscribers(userId: number): Promise<SubscriberPayload[]> {
+        const subscribers = await this.followingRepository.findSubscribers(userId);
+
+        return subscribers.map((subscriber: FollowersAndUserFieldsFromDatabase) => ({
+            publisherId: subscriber.following_publisher_id,
+            nicknameSubscriber: subscriber.u_nickname,
+            subscriberId: subscriber.following_subscriber_id,
         }));
     }
 

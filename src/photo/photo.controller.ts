@@ -1,4 +1,10 @@
-import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+    ApiCreatedResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiParam,
+    ApiTags,
+} from '@nestjs/swagger';
 import {
     Body,
     Controller,
@@ -60,11 +66,14 @@ export class PhotoController {
             layout: 'photos',
             photos: photos,
             isAllowedToGoToProfile: true,
+            allowLiked: true,
         });
     }
 
     @Post('/photo/upload')
     @UseInterceptors(FileInterceptor('image', storage))
+    @ApiCreatedResponse()
+    @ApiNotFoundResponse()
     async publishPhoto(
         @UploadedFile() file: Express.Multer.File,
         @Body() createPhotoDto: CreatePhotoDto,

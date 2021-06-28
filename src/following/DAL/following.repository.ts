@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FollowingEntity } from '../../repositories/following.entity';
+import { FollowingEntity } from 'src/repositories/following.entity';
 import { Repository } from 'typeorm';
 import { Followers, IdsForFollowers } from 'src/following/interfaces/following.interfaces';
 import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
@@ -12,11 +12,19 @@ export class FollowingRepository {
         private readonly followingRepository: Repository<FollowingEntity>,
     ) {}
 
-    async findAllPublishers(userId: number): Promise<FollowersAndUserFieldsFromDatabase[]> {
+    async findPublishers(userId: number): Promise<FollowersAndUserFieldsFromDatabase[]> {
         return await this.followingRepository
             .createQueryBuilder('following')
             .innerJoinAndSelect('users', 'u', 'u.user_id = following.publisher_id')
             .where('following.subscriber_id = :userId', { userId })
+            .getRawMany();
+    }
+
+    async findSubscribers(userId: number): Promise<FollowersAndUserFieldsFromDatabase[]> {
+        return await this.followingRepository
+            .createQueryBuilder('following')
+            .innerJoinAndSelect('users', 'u', 'u.user_id = following.subscriber_id')
+            .where('following.publisher_id = :userId', { userId })
             .getRawMany();
     }
 

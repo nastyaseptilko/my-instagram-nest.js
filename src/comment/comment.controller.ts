@@ -60,7 +60,7 @@ export class CommentController {
             comment: createCommentDto.text,
         });
 
-        await this.commentService.create({
+        return await this.commentService.create({
             text: comment,
             userId: req.user.id,
             photoId,

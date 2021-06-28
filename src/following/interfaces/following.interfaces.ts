@@ -4,7 +4,7 @@ export type Followers = {
     publisher: number;
 };
 
-export type FollowersWithUser = {
+export type PublisherPayload = {
     followingId: number;
     nicknamePublisher: string;
     publisherId: number;
@@ -13,4 +13,10 @@ export type FollowersWithUser = {
 export type IdsForFollowers = {
     subscriber: number;
     publisher: number;
+};
+
+export type SubscriberPayload = {
+    publisherId: number;
+    nicknameSubscriber: string;
+    subscriberId: number;
 };
