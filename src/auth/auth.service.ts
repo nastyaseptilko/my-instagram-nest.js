@@ -9,14 +9,14 @@ export class AuthService {
     constructor(private readonly userService: UserService) {}
 
     async hashPassword(createUserDto: CreateUserPayload): Promise<string> {
-        const saltOrRounds = 10;
-        const salt = await bcrypt.genSalt(saltOrRounds);
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
 
         return await bcrypt.hash(createUserDto.password, salt);
     }
 
     async verifyPassword(loginUserDto: LoginUserDto): Promise<User | null> {
-        const user = await this.userService.findOneByEmail(loginUserDto.email);
+        const user = await this.userService.findUserByEmail(loginUserDto.email);
 
         if (user && user.password) {
             const isMatch = await bcrypt.compare(loginUserDto.password, user.password);

@@ -27,8 +27,8 @@ export class UserProfileController {
     ): Promise<void> {
         const targetUserId = userId || req.user.id;
         const user = await this.userService.findOne(targetUserId);
-        const publishers = await this.followingService.findAllPublishers(req.user.id);
-        const subscribers = await this.followingService.findAllSubscribers(req.user.id);
+        const publishers = await this.followingService.findPublishers(req.user.id);
+        const subscribers = await this.followingService.findSubscribers(req.user.id);
 
         if (user) {
             const photos = await this.photoService.findAll(targetUserId);
@@ -38,6 +38,8 @@ export class UserProfileController {
                 user: user,
                 ownProfile: req.user.id === targetUserId,
                 allowViewPublishers: publishers,
+                isProfilePage: true,
+                isAllowedToGoToProfile: false,
                 allowViewSubscribers: subscribers,
                 allowViewLikesCount: true,
                 publishers,

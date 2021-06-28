@@ -65,6 +65,7 @@ export class PhotoController {
             title: 'Photos',
             layout: 'photos',
             photos: photos,
+            isAllowedToGoToProfile: true,
             allowLiked: true,
         });
     }

@@ -9,6 +9,7 @@ import { PhotoModule } from 'src/photo/photo.module';
 import { FollowingModule } from 'src/following/following.module';
 import { SearchModule } from 'src/search/search.module';
 import { CommentModule } from 'src/comment/comment.module';
+import { LoggerModule } from 'src/logger/logger.module';
 import { LikeModule } from 'src/like/like.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { LikeModule } from 'src/like/like.module';
             envFilePath: '.env',
         }),
         TypeOrmModule.forRoot(),
+        LoggerModule,
         UserModule,
         AuthModule,
         PhotoModule,

@@ -1,26 +1,32 @@
-import { UserService } from './user.service';
-import { Body, Controller, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put, Res } from '@nestjs/common';
 import {
     ApiCreatedResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
+    ApiOperation,
     ApiParam,
     ApiTags,
 } from '@nestjs/swagger';
-import { User } from './interfaces/user.interfaces';
-import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
+import { User } from 'src/user/interfaces/user.interfaces';
+import { CreateUserDto } from 'src/user/dto/create.user.dto';
+import { UpdateUserDto } from 'src/user/dto/update.user.dto';
+import { Response } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('User')
-@Controller('api')
+@Controller('/')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly authService: AuthService,
+    ) {}
 
     @Get('/users')
     @ApiOkResponse()
     @ApiNotFoundResponse()
     async getUsers(): Promise<User[]> {
-        return await this.userService.findAll();
+        return await this.userService.findUsers();
     }
 
     @Get('/user/:userId')
@@ -35,11 +41,39 @@ export class UserController {
         return user;
     }
 
-    @Post('/user')
+    @Post('/register')
+    @ApiOperation({
+        summary: 'Register to the system.',
+        description:
+            'Here the function first looks for the user by email (the email is taken from the form),' +
+            'if such an email already exists in the database, the user will be notified of an error. Email must be unique.',
+    })
     @ApiCreatedResponse()
     @ApiNotFoundResponse()
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<void> {
-        return await this.userService.create(createUserDto);
+    async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<void> {
+        const user = await this.userService.findUserByEmail(createUserDto.email);
+
+        if (user) {
+            res.render('register', {
+                title: 'Register',
+                layout: 'authorization',
+                error: 'This user is already registered',
+            });
+        } else {
+            const hash = await this.authService.hashPassword(createUserDto);
+            await this.userService.create({
+                fullName: createUserDto.fullName,
+                nickname: createUserDto.nickname,
+                webSite: createUserDto.webSite,
+                bio: createUserDto.bio,
+                email: createUserDto.email,
+                password: hash,
+            });
+            res.render('login', {
+                title: 'Login',
+                layout: 'authorization',
+            });
+        }
     }
 
     @Put('/user/:userId')

@@ -1,24 +1,18 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
-import {
-    ApiCreatedResponse,
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-} from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/create.user.dto';
 import { Response } from 'express';
 import { LoginUserDto } from 'src/auth/dto/login.user.dto';
 import { User } from 'src/user/interfaces/user.interfaces';
 import * as jwt from 'jsonwebtoken';
-import { ResolveToken, Token } from 'src/auth/interfaces/auth.interfaces';
+import { Logger } from 'src/logger/logger.service';
 
 @ApiTags('Auth')
 @Controller('/')
 export class AuthController {
     constructor(
+        private readonly logger: Logger,
         private readonly userService: UserService,
         private readonly authService: AuthService,
     ) {}
@@ -55,40 +49,11 @@ export class AuthController {
         res.redirect('/login');
     }
 
-    @Post('/register')
-    @ApiCreatedResponse()
-    @ApiNotFoundResponse()
-    async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<void> {
-        const user = await this.userService.findOneByEmail(createUserDto.email);
-
-        if (user) {
-            res.render('register', {
-                title: 'Register',
-                layout: 'authorization',
-                errorIsUser: 'This user is already registered',
-            });
-        } else {
-            const hash = await this.authService.hashPassword(createUserDto);
-            await this.userService.create({
-                name: createUserDto.name,
-                userName: createUserDto.userName,
-                webSite: createUserDto.webSite,
-                bio: createUserDto.bio,
-                email: createUserDto.email,
-                password: hash,
-            });
-            res.render('login', {
-                title: 'Login',
-                layout: 'authorization',
-            });
-        }
-    }
-
     @Post('/login')
     @ApiOperation({
         summary: 'Login to the system.',
         description:
-            'Here the function is called to compare passwords, if the passwords do not match, null is returned.',
+            'Here the function is called to compare passwords, if the passwords do not match, an error message will appear.',
     })
     @ApiOkResponse()
     @ApiNotFoundResponse()
@@ -103,7 +68,7 @@ export class AuthController {
                 );
                 res.cookie('token', token);
             } catch (e) {
-                console.log('Generate token error');
+                this.logger.error('Generate token error', e.trace);
             } finally {
                 res.redirect('/');
             }
@@ -120,9 +85,9 @@ export class AuthController {
 
 export function generateAccessToken(user: { user?: User }, secret: jwt.Secret): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        jwt.sign(user, secret, (err: Error | null, token: Token) => {
-            if (err) reject(err);
-            else resolve(token as ResolveToken);
+        jwt.sign(user, secret, (err, token) => {
+            if (token) resolve(token);
+            else reject(err);
         });
     });
 }

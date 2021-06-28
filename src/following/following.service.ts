@@ -1,56 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FollowingEntity } from 'src/repositories/following.entity';
-import { Repository } from 'typeorm';
 import {
-    FollowingAndUserFieldsFromDatabase,
-    IdsForFollowing,
-    PublisherPayload,
+    IdsForFollowers,
     SubscriberPayload,
+    PublisherPayload,
 } from 'src/following/interfaces/following.interfaces';
+import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
+import { FollowingRepository } from 'src/following/DAL/following.repository';
 
 @Injectable()
 export class FollowingService {
-    constructor(
-        @InjectRepository(FollowingEntity)
-        private readonly followingRepository: Repository<FollowingEntity>,
-    ) {}
+    constructor(private readonly followingRepository: FollowingRepository) {}
 
-    async findAllPublishers(userId: number): Promise<PublisherPayload[]> {
-        const publishers = await this.followingRepository
-            .createQueryBuilder('following')
-            .select()
-            .innerJoinAndSelect('users', 'u', 'u.user_id = following.publisher_id')
-            .where('following.subscriber_id = :userId', { userId })
-            .getRawMany();
+    async findPublishers(userId: number): Promise<PublisherPayload[]> {
+        const publishers = await this.followingRepository.findPublishers(userId);
 
-        return publishers.map((el: FollowingAndUserFieldsFromDatabase) => ({
+        return publishers.map((el: FollowersAndUserFieldsFromDatabase) => ({
             followingId: el.following_follow_id,
-            userNamePublisher: el.u_userName,
+            nicknamePublisher: el.u_nickname,
             publisherId: el.following_publisher_id,
         }));
     }
 
-    async findAllSubscribers(userId: number): Promise<SubscriberPayload[]> {
-        const subscribers = await this.followingRepository
-            .createQueryBuilder('following')
-            .innerJoinAndSelect('users', 'u', 'u.user_id = following.subscriber_id')
-            .where('following.publisher_id = :userId', { userId })
-            .getRawMany();
+    async findSubscribers(userId: number): Promise<SubscriberPayload[]> {
+        const subscribers = await this.followingRepository.findSubscribers(userId);
 
-        return subscribers.map((subscriber: FollowingAndUserFieldsFromDatabase) => ({
+        return subscribers.map((subscriber: FollowersAndUserFieldsFromDatabase) => ({
             publisherId: subscriber.following_publisher_id,
-            userNameSubscriber: subscriber.u_userName,
+            nicknameSubscriber: subscriber.u_nickname,
             subscriberId: subscriber.following_subscriber_id,
         }));
     }
 
-    async follow(idsForFollowing: IdsForFollowing): Promise<void> {
-        const following = await this.followingRepository.findOne({
-            where: { subscriber: idsForFollowing.subscriber, publisher: idsForFollowing.publisher },
-        });
-        if (!following) {
-            await this.followingRepository.insert(idsForFollowing);
+    async follow(idsForFollowers: IdsForFollowers): Promise<void> {
+        const followers = await this.followingRepository.findFollowers(idsForFollowers);
+
+        if (followers.length === 0) {
+            await this.followingRepository.create(idsForFollowers);
         } else {
             throw new Error('You are already following this person');
         }

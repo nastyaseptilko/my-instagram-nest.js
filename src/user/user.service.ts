@@ -1,40 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { Repository } from 'typeorm';
 import { CreateUserPayload, UpdateUserPayload, User } from 'src/user/interfaces/user.interfaces';
+import { UserRepository } from 'src/user/DAL/user.repository';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(UsersEntity)
-        private userRepository: Repository<UsersEntity>,
-    ) {}
+    constructor(private userRepository: UserRepository) {}
 
-    async findAll(): Promise<User[]> {
+    async findUsers(): Promise<User[]> {
         return await this.userRepository.find();
     }
 
-    async findAllByEmails(emails: string[]): Promise<User[]> {
+    async findUsersByEmails(emails: string[]): Promise<User[]> {
         if (emails.length === 0) {
             return [];
         }
-        return await this.userRepository
-            .createQueryBuilder('users')
-            .where('users.email IN (:emails)', { emails })
-            .getMany();
+        return await this.userRepository.findUsersByEmails(emails);
     }
 
     async findOne(userId: number): Promise<User | undefined> {
         return await this.userRepository.findOne(userId);
     }
 
-    async findOneByEmail(email: string): Promise<User | undefined> {
-        return await this.userRepository.findOne({ where: { email } });
+    async findUserByEmail(email: string): Promise<User | undefined> {
+        return await this.userRepository.findUserByEmail(email);
     }
 
     async create(createUser: CreateUserPayload): Promise<void> {
-        await this.userRepository.insert(createUser);
+        await this.userRepository.create(createUser);
     }
 
     async update(userId: number, updateUser: UpdateUserPayload) {

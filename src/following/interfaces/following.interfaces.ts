@@ -1,35 +1,22 @@
-export type Following = {
+export type Followers = {
     id: number;
     subscriber: number;
     publisher: number;
 };
 
-export type FollowingAndUserFieldsFromDatabase = {
-    following_follow_id: number;
-    following_subscriber_id: number;
-    following_publisher_id: number;
-    u_user_id: number;
-    u_name: string | null;
-    u_userName: string;
-    u_webSite: string | null;
-    u_bio: string | null;
-    u_email: string;
-    u_password: string | null;
-};
-
 export type PublisherPayload = {
     followingId: number;
-    userNamePublisher: string;
+    nicknamePublisher: string;
     publisherId: number;
+};
+
+export type IdsForFollowers = {
+    subscriber: number;
+    publisher: number;
 };
 
 export type SubscriberPayload = {
     publisherId: number;
-    userNameSubscriber: string;
+    nicknameSubscriber: string;
     subscriberId: number;
-};
-
-export type IdsForFollowing = {
-    subscriber: number;
-    publisher: number;
 };

@@ -1,27 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { getRepository } from 'typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { FollowingEntity } from 'src/repositories/following.entity';
+import { SearchRepository } from 'src/search/DAL/search.repository';
 import { User } from 'src/user/interfaces/user.interfaces';
 
 @Injectable()
 export class SearchService {
+    constructor(private readonly searchRepository: SearchRepository) {}
+
     async findUsers(search: string, currentUserId: number): Promise<User[]> {
-        const users = await getRepository(UsersEntity)
-            .createQueryBuilder('users')
-            .where('users.userName like :search', { search: `%${search}%` })
-            .andWhere('users.user_id != :currentUserId')
-            .andWhere(qb => {
-                const followingQuery = qb
-                    .subQuery()
-                    .select('publisher_id')
-                    .from(FollowingEntity, 'followings')
-                    .where('subscriber_id = :currentUserId')
-                    .getQuery();
-                return `users.user_id NOT IN ${followingQuery}`;
-            })
-            .setParameter('currentUserId', currentUserId)
-            .getMany();
+        const users = await this.searchRepository.findAllUsers(search, currentUserId);
 
         if (users.length !== 0) {
             return users;

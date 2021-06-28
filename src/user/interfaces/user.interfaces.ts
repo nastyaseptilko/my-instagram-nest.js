@@ -1,7 +1,7 @@
 export type User = {
     id: number;
-    name: string | null;
-    userName: string;
+    fullName: string | null;
+    nickname: string;
     webSite: string | null;
     bio: string | null;
     email: string;
@@ -9,8 +9,8 @@ export type User = {
 };
 
 export type CreateUserPayload = {
-    name?: string;
-    userName: string;
+    fullName?: string;
+    nickname: string;
     webSite?: string;
     bio?: string;
     email: string;
@@ -18,8 +18,8 @@ export type CreateUserPayload = {
 };
 
 export type UpdateUserPayload = {
-    name?: string;
-    userName?: string;
+    fullName?: string;
+    nickname?: string;
     webSite?: string;
     bio?: string;
 };
