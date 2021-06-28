@@ -20,10 +20,12 @@ import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
 import * as request from 'supertest';
+import { Repository } from 'typeorm';
 
 describe('User', () => {
     let app: NestExpressApplication;
     let token: string;
+    let userRepository: Repository<UsersEntity>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -76,6 +78,34 @@ describe('User', () => {
         await app.init();
 
         token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+
+        userRepository = module.get('UsersEntityRepository');
+
+        await userRepository.save([
+            {
+                id: 1,
+                name: 'Test_1',
+                userName: 'test_1',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test1@test.com',
+                password: 'testing123',
+            },
+            {
+                id: 2,
+                name: 'Test_2',
+                userName: 'test_2',
+                webSite: 'none',
+                bio: 'I am test',
+                email: 'test2@test.com',
+                password: 'testing123',
+            },
+        ]);
+    });
+
+    afterAll(async () => {
+        await userRepository.query(`DELETE FROM users;`);
+        await app.close();
     });
 
     it(`GET users`, async () => {
