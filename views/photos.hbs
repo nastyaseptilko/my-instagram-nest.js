@@ -1,6 +1,6 @@
 <div class="card" style="width: 50%; position: relative; margin-left: 25%">
     {{#each photos}}
-        {{>photo this allowLiked=@root.allowLiked isAllowedToGoToProfile=@root.isAllowedToGoToProfile}}
+        {{>photo this isAllowLiked=@root.isAllowLiked isAllowedToGoToProfile=@root.isAllowedToGoToProfile}}
     {{/each}}
 </div>
 <button type="button" style="margin-left: 15px" class="btn btn-outline-dark" onclick="history.back();">Back</button><p></p>

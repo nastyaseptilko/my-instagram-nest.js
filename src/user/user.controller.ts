@@ -41,6 +41,17 @@ export class UserController {
         return user;
     }
 
+    @Get('/register')
+    @ApiOkResponse()
+    @ApiNotFoundResponse()
+    async getPageRegister(@Res() res: Response): Promise<void> {
+        res.render('register', {
+            title: 'Register',
+            layout: 'authorization',
+            registerLink: false,
+        });
+    }
+
     @Post('/register')
     @ApiOperation({
         summary: 'Register to the system.',

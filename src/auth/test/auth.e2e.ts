@@ -21,6 +21,8 @@ import { LikesEntity } from 'src/repositories/likes.entity';
 import { Repository } from 'typeorm';
 import { GoogleAuthStrategyService } from 'src/auth/google.auth.strategy.service';
 import { GoogleAuthController } from 'src/auth/google.auth.controller';
+import { UserRepository } from 'src/user/dal/user.repository';
+import { LoggerModule } from 'src/logger/logger.module';
 
 describe('Auth', () => {
     let app: NestExpressApplication;
@@ -35,6 +37,7 @@ describe('Auth', () => {
                 TypeOrmModule.forFeature([UsersEntity]),
                 UserModule,
                 AuthModule,
+                LoggerModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -52,7 +55,7 @@ describe('Auth', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [AuthService, UserService, GoogleAuthStrategyService],
+            providers: [UserRepository, AuthService, UserService, GoogleAuthStrategyService],
             controllers: [AuthController, GoogleAuthController],
         }).compile();
 
@@ -88,13 +91,6 @@ describe('Auth', () => {
             .expect(200);
     });
 
-    it(`GET page register`, async () => {
-        await request(app.getHttpServer())
-            .get('/register')
-            .set('Accept', 'application/json')
-            .expect(200);
-    });
-
     it(`GET logout`, async () => {
         await request(app.getHttpServer())
             .get('/register')
@@ -104,8 +100,8 @@ describe('Auth', () => {
 
     it(`POST register`, async () => {
         const result = await request(app.getHttpServer()).post('/register').send({
-            name: 'Test',
-            userName: 'test',
+            fullName: 'Test',
+            nickname: 'test',
             webSite: 'test',
             bio: 'test',
             email: 'test@mail.ru',
@@ -114,23 +110,6 @@ describe('Auth', () => {
 
         expect(result.status).toBe(201);
         expect(result.type).toBe('text/html');
-    });
-
-    it(`POST register. Expected status 400 on validation error`, async () => {
-        const result = await request(app.getHttpServer()).post('/register').send({
-            name: 'Test',
-            webSite: 'test',
-            bio: 'test',
-            email: 'test@mail.ru',
-            password: 'test12345',
-        });
-
-        expect(result.status).toBe(400);
-        expect(result.body).toEqual({
-            error: 'Bad Request',
-            message: ['userName should not be empty'],
-            statusCode: 400,
-        });
     });
 
     it(`POST login`, async () => {

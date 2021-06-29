@@ -17,10 +17,15 @@ import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
-import { UserModule } from 'src/user/user.module';
-import { UserController } from 'src/user/user.controller';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
+import { UserRepository } from 'src/user/dal/user.repository';
+import { PhotoRepository } from 'src/photo/dal/photo.repository';
+import { FollowingRepository } from 'src/following/dal/following.repository';
+import { AuthService } from 'src/auth/auth.service';
+import { PhotoService } from 'src/photo/photo.service';
+import { FollowingService } from 'src/following/following.service';
+import { UserProfileController } from 'src/user/user.profile.controller';
 
 describe('User profile', () => {
     let app: NestExpressApplication;
@@ -35,8 +40,7 @@ describe('User profile', () => {
                 ConfigModule.forRoot({
                     envFilePath: '.env',
                 }),
-                TypeOrmModule.forFeature([UsersEntity]),
-                UserModule,
+                TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]),
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -54,8 +58,16 @@ describe('User profile', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [UserService],
-            controllers: [UserController],
+            providers: [
+                UserRepository,
+                PhotoRepository,
+                FollowingRepository,
+                UserService,
+                AuthService,
+                PhotoService,
+                FollowingService,
+            ],
+            controllers: [UserProfileController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
 
@@ -88,8 +100,8 @@ describe('User profile', () => {
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',
@@ -97,8 +109,8 @@ describe('User profile', () => {
             },
             {
                 id: 2,
-                name: 'Test_2',
-                userName: 'test_2',
+                fullName: 'Test_2',
+                nickname: 'test_2',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test2@test.com',
@@ -171,8 +183,8 @@ describe('User profile', () => {
         const result = await request(app.getHttpServer())
             .put('/api/profile/1')
             .send({
-                name: 'Test',
-                userName: 'testing23',
+                fullName: 'Test',
+                nickname: 'testing23',
                 webSite: 'https://jestjs.io/',
                 bio: 'Hello test case',
             })
@@ -185,8 +197,8 @@ describe('User profile', () => {
         const result = await request(app.getHttpServer())
             .put('/api/profile/9999999')
             .send({
-                name: 'Test',
-                userName: 'testing23',
+                fullName: 'Test',
+                nickname: 'testing23',
             })
             .set('Cookie', `token=${token};`);
 

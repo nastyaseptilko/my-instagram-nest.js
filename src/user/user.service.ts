@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserPayload, UpdateUserPayload, User } from 'src/user/interfaces/user.interfaces';
-import { UserRepository } from 'src/user/DAL/user.repository';
+import { UserRepository } from 'src/user/dal/user.repository';
 
 @Injectable()
 export class UserService {
@@ -29,7 +29,7 @@ export class UserService {
         await this.userRepository.create(createUser);
     }
 
-    async update(userId: number, updateUser: UpdateUserPayload) {
+    async update(userId: number, updateUser: UpdateUserPayload): Promise<boolean> {
         const updateResult = await this.userRepository.update(userId, updateUser);
         return updateResult.affected !== 0;
     }

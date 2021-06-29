@@ -33,7 +33,7 @@ export class CommentController {
             layout: 'comments',
             comments: comments.map(c => ({
                 ...c,
-                allowEdit: Number(req.user.id) === c.userId,
+                isAllowEdit: Number(req.user.id) === c.userId,
             })),
         });
     }

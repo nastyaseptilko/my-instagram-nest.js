@@ -17,13 +17,14 @@ import * as session from 'express-session';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
 import { NextFunction, Response } from 'express';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
-import * as jwt from 'jsonwebtoken';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
+import { UserRepository } from 'src/user/dal/user.repository';
+import { AuthService } from 'src/auth/auth.service';
+import { UserModule } from 'src/user/user.module';
 
 describe('User', () => {
     let app: NestExpressApplication;
-    let token: string;
     let userRepository: Repository<UsersEntity>;
 
     beforeAll(async () => {
@@ -33,6 +34,7 @@ describe('User', () => {
                     envFilePath: '.env',
                 }),
                 TypeOrmModule.forFeature([UsersEntity]),
+                UserModule,
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'localhost',
@@ -50,7 +52,7 @@ describe('User', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [UserService],
+            providers: [UserRepository, AuthService, UserService],
             controllers: [UserController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
@@ -75,15 +77,13 @@ describe('User', () => {
 
         await app.init();
 
-        token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
-
         userRepository = module.get('UsersEntityRepository');
 
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',
@@ -91,8 +91,8 @@ describe('User', () => {
             },
             {
                 id: 2,
-                name: 'Test_2',
-                userName: 'test_2',
+                fullName: 'Test_2',
+                nickname: 'test_2',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test2@test.com',
@@ -107,27 +107,22 @@ describe('User', () => {
     });
 
     it(`GET users`, async () => {
-        const result = await request(app.getHttpServer())
-            .get('/api/users')
-            .set('Cookie', `token=${token};`);
+        const result = await request(app.getHttpServer()).get('/users');
+        // .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(200);
         expect(result.type).toBe('application/json');
     });
 
     it(`GET user`, async () => {
-        const result = await request(app.getHttpServer())
-            .get('/api/user/1')
-            .set('Cookie', `token=${token};`);
+        const result = await request(app.getHttpServer()).get('/user/1');
 
         expect(result.status).toBe(200);
         expect(result.type).toBe('application/json');
     });
 
     it(`GET user. Expected status 404 the user does not exist`, async () => {
-        const result = await request(app.getHttpServer())
-            .get('/api/user/9999999')
-            .set('Cookie', `token=${token};`);
+        const result = await request(app.getHttpServer()).get('/user/9999999');
 
         expect(result.status).toBe(404);
         expect(result.type).toBe('application/json');
@@ -138,43 +133,59 @@ describe('User', () => {
         });
     });
 
-    it(`POST user`, async () => {
-        const result = await request(app.getHttpServer())
-            .post('/api/user')
-            .set('Cookie', `token=${token};`)
-            .send({
-                name: 'Jest',
-                userName: 'jestjestjest',
-                webSite: 'none',
-                bio: 'My name is jest',
-                email: 'testJest@test.com',
-                password: 'testing123',
-            });
+    it(`GET page register`, async () => {
+        await request(app.getHttpServer())
+            .get('/register')
+            .set('Accept', 'application/json')
+            .expect(200);
+    });
+
+    it(`POST register`, async () => {
+        const result = await request(app.getHttpServer()).post('/register').send({
+            fullName: 'Test',
+            nickname: 'test',
+            webSite: 'test',
+            bio: 'test',
+            email: 'test@mail.ru',
+            password: 'test12345',
+        });
 
         expect(result.status).toBe(201);
+        expect(result.type).toBe('text/html');
+    });
+
+    it(`POST register. Expected status 400 on validation error`, async () => {
+        const result = await request(app.getHttpServer()).post('/register').send({
+            fullName: 'Test',
+            webSite: 'test',
+            bio: 'test',
+            email: 'test@mail.ru',
+            password: 'test12345',
+        });
+
+        expect(result.status).toBe(400);
+        expect(result.body).toEqual({
+            error: 'Bad Request',
+            message: ['nickname should not be empty'],
+            statusCode: 400,
+        });
     });
 
     it(`PUT user`, async () => {
-        const result = await request(app.getHttpServer())
-            .put('/api/user/1')
-            .set('Cookie', `token=${token};`)
-            .send({
-                name: 'Test Jest',
-                userName: 'TestTestTest',
-                webSite: 'none',
-                bio: 'My name is jest',
-            });
+        const result = await request(app.getHttpServer()).put('/user/1').send({
+            fullName: 'Test Jest',
+            nickname: 'TestTestTest',
+            webSite: 'none',
+            bio: 'My name is jest',
+        });
 
         expect(result.status).toBe(200);
     });
 
     it(`PUT photo. Expected status 404 the user does not update`, async () => {
-        const result = await request(app.getHttpServer())
-            .put('/api/user/9999999')
-            .set('Cookie', `token=${token};`)
-            .send({
-                name: 'Test Jest',
-            });
+        const result = await request(app.getHttpServer()).put('/user/9999999').send({
+            fullName: 'Test Jest',
+        });
 
         expect(result.status).toBe(404);
         expect(result.body).toEqual({

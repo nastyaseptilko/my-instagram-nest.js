@@ -2,7 +2,7 @@
     <p class="card-text"><strong>{{nickname}}</strong></p>
     <p class="card-text">{{text}}</p>
 
-    {{#if allowEdit}}
+    {{#if isAllowEdit}}
         <input name="text" id="comment-{{commentId}}" type="text" value="{{text}}" class="form-control"
                aria-describedby="button-addon4"><br>
 

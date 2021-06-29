@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FollowingEntity } from 'src/repositories/following.entity';
 import { Repository } from 'typeorm';
 import { Followers, IdsForFollowers } from 'src/following/interfaces/following.interfaces';
-import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
+import { FollowersAndUserFieldsFromDatabase } from 'src/following/dal/following.repository.interfaces';
 
 @Injectable()
 export class FollowingRepository {

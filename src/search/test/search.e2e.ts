@@ -21,6 +21,7 @@ import { SearchService } from 'src/search/search.service';
 import { SearchController } from 'src/search/search.controller';
 import { SearchModule } from 'src/search/search.module';
 import { Repository } from 'typeorm';
+import { SearchRepository } from 'src/search/dal/search.repository';
 
 describe('Search', () => {
     let app: NestExpressApplication;
@@ -52,7 +53,7 @@ describe('Search', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [SearchService],
+            providers: [SearchRepository, SearchService],
             controllers: [SearchController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
@@ -84,8 +85,8 @@ describe('Search', () => {
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',
@@ -93,8 +94,8 @@ describe('Search', () => {
             },
             {
                 id: 2,
-                name: 'Test_2',
-                userName: 'test_2',
+                fullName: 'Test_2',
+                nickname: 'test_2',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test2@test.com',
@@ -119,8 +120,8 @@ describe('Search', () => {
         expect(result.body).toEqual([
             {
                 id: 2,
-                name: 'Test_2',
-                userName: 'test_2',
+                fullName: 'Test_2',
+                nickname: 'test_2',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test2@test.com',

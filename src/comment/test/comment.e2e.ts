@@ -1,6 +1,6 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { PhotosEntity } from 'src/repositories/photos.entity';
@@ -22,6 +22,8 @@ import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware
 import { NextFunction, Response } from 'express';
 import { Repository } from 'typeorm';
 import { PhotoModule } from 'src/photo/photo.module';
+import { UserRepository } from 'src/user/dal/user.repository';
+import { CommentRepository } from 'src/comment/dal/comment.repository';
 
 describe('Comment', () => {
     let app: NestExpressApplication;
@@ -55,7 +57,7 @@ describe('Comment', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [ConfigService, UserService, CommentService],
+            providers: [UserRepository, UserService, CommentRepository, CommentService],
             controllers: [CommentController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();

@@ -4,8 +4,8 @@ import {
     SubscriberPayload,
     PublisherPayload,
 } from 'src/following/interfaces/following.interfaces';
-import { FollowersAndUserFieldsFromDatabase } from 'src/following/DAL/following.repository.interfaces';
-import { FollowingRepository } from 'src/following/DAL/following.repository';
+import { FollowersAndUserFieldsFromDatabase } from 'src/following/dal/following.repository.interfaces';
+import { FollowingRepository } from 'src/following/dal/following.repository';
 
 @Injectable()
 export class FollowingService {

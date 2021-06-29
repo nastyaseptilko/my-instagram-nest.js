@@ -21,6 +21,7 @@ import { PhotoService } from 'src/photo/photo.service';
 import { PhotoController } from 'src/photo/photo.controller';
 import { Repository } from 'typeorm';
 import { UserModule } from 'src/user/user.module';
+import { PhotoRepository } from 'src/photo/dal/photo.repository';
 
 describe('Photo', () => {
     let app: NestExpressApplication;
@@ -53,7 +54,7 @@ describe('Photo', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [PhotoService],
+            providers: [PhotoRepository, PhotoService],
             controllers: [PhotoController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
@@ -86,8 +87,8 @@ describe('Photo', () => {
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',

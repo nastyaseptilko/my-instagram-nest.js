@@ -92,14 +92,10 @@ function unfollow(followingId) {
 }
 
 async function getLikes(photoId) {
-    let options = {
-        method: 'GET',
-    };
-
-    await fetch(`/api/likes/${photoId}`, options)
+    await fetch(`/api/likes/${photoId}`)
         .then(response => response.json())
         .then(response => {
-            const div = document.getElementById('countLikes');
+            const div = document.getElementById(`countLikes-${photoId}`);
 
             const likes = document.createElement('span');
             likes.innerText = `Likes: ${response.likesCount}`;

@@ -7,7 +7,7 @@ import {
     Photo,
     PhotoUpdatePayload,
 } from 'src/photo/interfaces/photo.interfaces';
-import { PhotoAndFollowingFieldsFromDatabase } from 'src/photo/DAL/photo.repository.interfaces';
+import { PhotoAndFollowingFieldsFromDatabase } from 'src/photo/dal/photo.repository.interfaces';
 
 @Injectable()
 export class PhotoRepository {
@@ -17,7 +17,7 @@ export class PhotoRepository {
     ) {}
 
     async find(userId: number): Promise<Photo[]> {
-        return await this.photoRepository.find({ where: { userId } });
+        return await this.photoRepository.find({ where: { userId }, order: { id: 'DESC' } });
     }
 
     async findAllPhotos(userId: number): Promise<PhotoAndFollowingFieldsFromDatabase[]> {

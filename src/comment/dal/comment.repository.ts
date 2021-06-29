@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentsEntity } from 'src/repositories/comments.entity';
 import { Repository } from 'typeorm';
-import { CommentAndUserFieldsFromDatabase } from 'src/comment/DAL/comment.repository.interfaces';
+import { CommentAndUserFieldsFromDatabase } from 'src/comment/dal/comment.repository.interfaces';
 import {
     CreateCommentPayload,
     UpdateCommentPayload,

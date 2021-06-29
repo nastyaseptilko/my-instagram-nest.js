@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { SearchService } from 'src/search/search.service';
 import { SearchController } from 'src/search/search.controller';
-import { SearchRepository } from 'src/search/DAL/search.repository';
+import { SearchRepository } from 'src/search/dal/search.repository';
 
 @Module({
     imports: [TypeOrmModule.forFeature([UsersEntity])],

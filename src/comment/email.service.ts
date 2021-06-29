@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import Mail from 'nodemailer/lib/mailer';
 import { createTransport } from 'nodemailer';
-import { SendEmailPayload } from './interfaces/email.interfaces';
+import { SendEmailPayload } from 'src/comment/interfaces/email.interfaces';
 
 const EMAIL_SEARCH_REGEX = /@((([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,})))([\W]|$)/gm;
 

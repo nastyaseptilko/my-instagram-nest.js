@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { UsersEntity } from 'src/repositories/users.entity';
 import { FollowingEntity } from 'src/repositories/following.entity';
-import { ResultSearchUser } from 'src/search/DAL/search.repository.interfaces';
+import { ResultSearchUser } from 'src/search/dal/search.repository.interfaces';
 
 @Injectable()
 export class SearchRepository {

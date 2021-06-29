@@ -8,7 +8,7 @@
     <img src="{{imageUrl}}" class="card-img-top" alt="...">
 </figure>
 
-{{#if ownProfile}}
+{{#if isOwnProfile}}
     <div style="padding: 1rem">
         <input name='caption' id='caption-{{id}}' type="text" placeholder="Enter a new caption for the photo"
                class="form-control"> <br>
@@ -17,11 +17,11 @@
     </div>
 {{/if}}
 
-{{#if allowViewLikesCount}}
+{{#if isAllowViewLikesCount}}
     <div style='padding: 1rem'>
         <button type="button" class="btn btn-outline-dark btn-sm" onclick='getLikes({{id}})'>See the number of likes under this photo</button>
     </div>
-    <div style='padding: 1rem' id='countLikes'></div>
+    <div style='padding: 1rem' id='countLikes-{{id}}'></div>
 {{/if}}
 
 <div class="card-body">
@@ -42,7 +42,7 @@
 {{/if}}
 <hr>
 
-{{#if allowLiked}}
+{{#if isAllowLiked}}
     <button class="btn btn-outline-danger" onclick='likeAndDislike({{photoId}})'>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
              viewBox="0 0 16 16">

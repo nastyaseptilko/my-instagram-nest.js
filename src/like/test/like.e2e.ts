@@ -19,7 +19,7 @@ import * as jwt from 'jsonwebtoken';
 import { LikeService } from 'src/like/like.service';
 import { LikeController } from 'src/like/like.controller';
 import * as request from 'supertest';
-import { LikeRepository } from 'src/like/DAL/like.repository';
+import { LikeRepository } from 'src/like/dal/like.repository';
 import { Repository } from 'typeorm';
 import { UserModule } from 'src/user/user.module';
 import { PhotoModule } from 'src/photo/photo.module';
@@ -91,8 +91,8 @@ describe('Like', () => {
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',

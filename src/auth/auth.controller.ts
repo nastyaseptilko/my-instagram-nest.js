@@ -28,17 +28,6 @@ export class AuthController {
         });
     }
 
-    @Get('/register')
-    @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async getPageRegister(@Res() res: Response): Promise<void> {
-        res.render('register', {
-            title: 'Register',
-            layout: 'authorization',
-            registerLink: false,
-        });
-    }
-
     @Get('/logout')
     @ApiOkResponse()
     @ApiNotFoundResponse()

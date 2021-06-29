@@ -5,8 +5,8 @@ import {
     PhotoUpdatePayload,
     PhotoWithFollowing,
 } from 'src/photo/interfaces/photo.interfaces';
-import { PhotoAndFollowingFieldsFromDatabase } from 'src/photo/DAL/photo.repository.interfaces';
-import { PhotoRepository } from 'src/photo/DAL/photo.repository';
+import { PhotoAndFollowingFieldsFromDatabase } from 'src/photo/dal/photo.repository.interfaces';
+import { PhotoRepository } from 'src/photo/dal/photo.repository';
 
 @Injectable()
 export class PhotoService {

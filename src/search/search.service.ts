@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SearchRepository } from 'src/search/DAL/search.repository';
+import { SearchRepository } from 'src/search/dal/search.repository';
 import { User } from 'src/user/interfaces/user.interfaces';
 
 @Injectable()

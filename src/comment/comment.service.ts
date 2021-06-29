@@ -6,8 +6,8 @@ import {
     UpdateCommentPayload,
 } from 'src/comment/interfaces/comment.interfaces';
 import { UserService } from 'src/user/user.service';
-import { CommentAndUserFieldsFromDatabase } from 'src/comment/DAL/comment.repository.interfaces';
-import { CommentRepository } from 'src/comment/DAL/comment.repository';
+import { CommentAndUserFieldsFromDatabase } from 'src/comment/dal/comment.repository.interfaces';
+import { CommentRepository } from 'src/comment/dal/comment.repository';
 
 @Injectable()
 export class CommentService {

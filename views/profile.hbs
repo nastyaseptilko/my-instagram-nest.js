@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    {{#if ownProfile}}
+    {{#if isOwnProfile}}
         <div class="card border-info mb-3" style="max-width: 50rem; padding: 1rem; margin-left: 5%">
             <h6>Edit information about profile:</h6>
             <div class="form-group ">
@@ -38,9 +38,9 @@
     {{/if}}
 
     <p></p>
-    {{#if ownProfile}}
+    {{#if isOwnProfile}}
         <div>
-            {{#if  allowViewPublishers}}
+            {{#if  isAllowViewPublishers}}
                 <h6 style="margin-left: 5%">Your publishers:</h6>
                 <div class="card border-info mb-3" style="overflow: auto; height: 15rem; max-width: 50rem; padding: 1rem; margin-left: 5%">
                     {{#each publishers}}
@@ -51,7 +51,7 @@
         </div>
 
         <div>
-            {{#if allowViewSubscribers}}
+            {{#if isAllowViewSubscribers}}
                 <h6 style="margin-left: 5%">Your subscribers:</h6>
                 <div class="card border-info mb-3" style="overflow: auto; height: 15rem; max-width: 50rem; padding: 1rem; margin-left: 5%">
                     {{#each subscribers}}
@@ -86,7 +86,7 @@
     {{#each photos}}
         <div class="card"
              style="width: 50%; position: relative; margin-right: 5%; margin-left: 25%; margin-bottom: 3%">
-            {{>photo this ownProfile=@root.ownProfile isProfilePage=@root.isProfilePage nickname=@root.user.nickname isAllowedToGoToProfile=@root.isAllowedToGoToProfile countLikes=@root.countLikes allowViewLikesCount=@root.allowViewLikesCount}}
+            {{>photo this isOwnProfile=@root.isOwnProfile isProfilePage=@root.isProfilePage nickname=@root.user.nickname isAllowedToGoToProfile=@root.isAllowedToGoToProfile countLikes=@root.countLikes isAllowViewLikesCount=@root.isAllowViewLikesCount}}
         </div>
     {{/each}}
 </div>

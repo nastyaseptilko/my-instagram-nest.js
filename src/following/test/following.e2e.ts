@@ -21,6 +21,7 @@ import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware
 import { NextFunction, Response } from 'express';
 import { Repository } from 'typeorm';
 import { UserModule } from 'src/user/user.module';
+import { FollowingRepository } from 'src/following/dal/following.repository';
 
 describe('Following', () => {
     let app: NestExpressApplication;
@@ -53,7 +54,7 @@ describe('Following', () => {
                     synchronize: true,
                 }),
             ],
-            providers: [FollowingService],
+            providers: [FollowingRepository, FollowingService],
             controllers: [FollowingController],
         }).compile();
         app = module.createNestApplication<NestExpressApplication>();
@@ -86,8 +87,8 @@ describe('Following', () => {
         await userRepository.save([
             {
                 id: 1,
-                name: 'Test_1',
-                userName: 'test_1',
+                fullName: 'Test_1',
+                nickname: 'test_1',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test1@test.com',
@@ -95,8 +96,8 @@ describe('Following', () => {
             },
             {
                 id: 2,
-                name: 'Test_2',
-                userName: 'test_2',
+                fullName: 'Test_2',
+                nickname: 'test_2',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test2@test.com',
@@ -104,8 +105,8 @@ describe('Following', () => {
             },
             {
                 id: 3,
-                name: 'Test_3',
-                userName: 'test_3',
+                fullName: 'Test_3',
+                nickname: 'test_3',
                 webSite: 'none',
                 bio: 'I am test',
                 email: 'test3@test.com',
