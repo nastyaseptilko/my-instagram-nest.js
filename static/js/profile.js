@@ -75,6 +75,16 @@ function updateProfile(userId) {
     fetch(`/api/profile/${userId}`, options);
 }
 
+function deleteProfile(userId) {
+    let options = {
+        method: 'DELETE',
+        redirect: 'follow',
+    };
+    fetch(`/api/profile/${userId}`, options).then(
+        response => (window.location.href = response.url),
+    );
+}
+
 function follow(publisherId) {
     let options = {
         method: 'POST',

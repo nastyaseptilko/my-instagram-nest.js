@@ -37,4 +37,8 @@ export class UserRepository {
     async update(userId: number, updateUser: UpdateUserPayload) {
         return await this.userRepository.update(userId, updateUser);
     }
+
+    async delete(userId: number) {
+        return await this.userRepository.delete(userId);
+    }
 }

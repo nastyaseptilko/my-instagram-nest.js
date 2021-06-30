@@ -12,9 +12,11 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserRepository } from 'src/user/dal/user.repository';
 import { PhotoRepository } from 'src/photo/dal/photo.repository';
 import { FollowingRepository } from 'src/following/dal/following.repository';
+import { AuthController } from '../auth/auth.controller';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity])],
+    imports: [TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]), LoggerModule],
     providers: [
         UserRepository,
         PhotoRepository,
@@ -24,6 +26,6 @@ import { FollowingRepository } from 'src/following/dal/following.repository';
         PhotoService,
         FollowingService,
     ],
-    controllers: [UserController, UserProfileController],
+    controllers: [UserController, UserProfileController, AuthController],
 })
 export class UserModule {}

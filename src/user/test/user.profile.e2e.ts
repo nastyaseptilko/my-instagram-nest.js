@@ -193,7 +193,7 @@ describe('User profile', () => {
         expect(result.status).toBe(200);
     });
 
-    it(`PUT user profile. Expected status 404 not found user`, async () => {
+    it(`PUT user profile. Expected status 400 not found user`, async () => {
         const result = await request(app.getHttpServer())
             .put('/api/profile/9999999')
             .send({
@@ -202,11 +202,20 @@ describe('User profile', () => {
             })
             .set('Cookie', `token=${token};`);
 
-        expect(result.status).toBe(404);
+        expect(result.status).toBe(400);
         expect(result.body).toEqual({
-            error: 'Not Found',
-            message: 'The user does not exist',
-            statusCode: 404,
+            error: 'Bad Request',
+            message: 'User is not updated',
+            statusCode: 400,
         });
+    });
+
+    it(`DELETE user profile`, async () => {
+        const result = await request(app.getHttpServer())
+            .delete('/api/profile/2')
+            .set('Cookie', `token=${token};`)
+            .send();
+
+        expect(result.status).toBe(303);
     });
 });
