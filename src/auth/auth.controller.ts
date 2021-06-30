@@ -35,7 +35,7 @@ export class AuthController {
         res.clearCookie('token');
         res.clearCookie('idToken');
         res.clearCookie('userId');
-        res.redirect('/login');
+        res.redirect('/login', 303);
     }
 
     @Post('/login')

@@ -33,4 +33,9 @@ export class UserService {
         const updateResult = await this.userRepository.update(userId, updateUser);
         return updateResult.affected !== 0;
     }
+
+    async delete(userId: number): Promise<boolean> {
+        const deletedResult = await this.userRepository.delete(userId);
+        return deletedResult.affected != 0;
+    }
 }

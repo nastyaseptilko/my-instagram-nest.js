@@ -1,5 +1,22 @@
-import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, NotFoundException, Param, Put, Req, Res } from '@nestjs/common';
+import {
+    ApiBadRequestResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiParam,
+    ApiTags,
+} from '@nestjs/swagger';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    NotFoundException,
+    Param,
+    Put,
+    Req,
+    Res,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { PhotoService } from 'src/photo/photo.service';
 import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
@@ -59,12 +76,28 @@ export class UserProfileController {
     @Put('/profile/:userId')
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
+    @ApiBadRequestResponse()
+    async updateUser(
+        @Body() updateUserDto: UpdateUserDto,
+        @Param('userId') userId: number,
+    ): Promise<void> {
         const updatedUser = await this.userService.update(userId, updateUserDto);
         if (!updatedUser) {
-            throw new NotFoundException('The user does not exist');
+            throw new BadRequestException('User is not updated');
         }
-        return updatedUser;
+    }
+
+    @Delete('/profile/:userId')
+    @ApiParam({ name: 'userId' })
+    @ApiOkResponse()
+    @ApiNotFoundResponse()
+    async deleteUser(@Param('userId') userId: number, @Res() res: Response) {
+        const deletedUser = await this.userService.delete(userId);
+
+        if (deletedUser) {
+            res.redirect('/logout', 303);
+        } else {
+            throw new BadRequestException('User is not deleted');
+        }
     }
 }

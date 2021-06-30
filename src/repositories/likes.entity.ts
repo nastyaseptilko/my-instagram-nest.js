@@ -16,7 +16,10 @@ export class LikesEntity {
     @IsNumber()
     photoId!: number;
 
-    @ManyToOne(() => UsersEntity, user => user.id)
+    @ManyToOne(() => UsersEntity, user => user.id, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     @JoinColumn({ name: 'user_id' })
     user!: UsersEntity;
 

@@ -15,11 +15,17 @@ export class FollowingEntity {
     @IsNumber()
     publisher!: number;
 
-    @ManyToOne(() => UsersEntity, user => user.id)
+    @ManyToOne(() => UsersEntity, user => user.id, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     @JoinColumn({ name: 'subscriber_id' })
     userSubscriber!: UsersEntity;
 
-    @ManyToOne(() => UsersEntity, user => user.id)
+    @ManyToOne(() => UsersEntity, user => user.id, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     @JoinColumn({ name: 'publisher_id' })
     userPublisher!: UsersEntity;
 }
