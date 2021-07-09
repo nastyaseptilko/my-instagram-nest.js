@@ -1,4 +1,4 @@
-export type Followers = {
+export type Follower = {
     id: number;
     subscriber: number;
     publisher: number;

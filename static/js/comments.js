@@ -2,7 +2,9 @@ function updateComment(commentId) {
     let options = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: document.getElementById(`comment-${commentId}`).value }),
+        body: JSON.stringify({
+            text: document.getElementById(`comment-${commentId}`).value,
+        }),
     };
     fetch(`/api/comment/${commentId}`, options);
 }

@@ -6,8 +6,8 @@ import { CreateLikePayload, Like } from 'src/like/interfaces/like.interfaces';
 export class LikeService {
     constructor(private readonly likeRepository: LikeRepository) {}
 
-    async findOne(ids: { userId: number; photoId: number }): Promise<Like | undefined> {
-        return await this.likeRepository.findOne(ids);
+    async findLike(ids: { userId: number; photoId: number }): Promise<Like | undefined> {
+        return await this.likeRepository.findLike(ids);
     }
 
     async findLikesCount(ids: { userId: number; photoId: number }) {

@@ -1,54 +1,75 @@
 import { UserService } from 'src/user/user.service';
-import { Body, Controller, Get, NotFoundException, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseFilters } from '@nestjs/common';
 import {
     ApiCreatedResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
     ApiOperation,
-    ApiParam,
     ApiTags,
 } from '@nestjs/swagger';
-import { User } from 'src/user/interfaces/user.interfaces';
 import { CreateUserDto } from 'src/user/dto/create.user.dto';
-import { UpdateUserDto } from 'src/user/dto/update.user.dto';
 import { Response } from 'express';
+import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
+import { toPresentation } from 'src/presentation.response';
+import { AuthenticatedRequest } from 'src/auth/interfaces/auth.middleware.interfaces';
+import { AuthExceptionFilter } from '../auth/common/filters/auth.exceptions.filter';
 
 @ApiTags('User')
 @Controller('/')
+@UseFilters(AuthExceptionFilter)
 export class UserController {
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
     ) {}
 
-    @Get('/users')
+    @Get('/login')
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getUsers(): Promise<User[]> {
-        return await this.userService.findUsers();
+    async getPageLogin(@Req() req: AuthenticatedRequest, @Res() res: Response): Promise<void> {
+        return toPresentation({
+            req,
+            res,
+            data: { registerLink: true },
+            render: {
+                viewName: 'login',
+                options: {
+                    title: 'Login',
+                    layout: 'authorization',
+                    registerLink: true,
+                },
+            },
+        });
     }
 
-    @Get('/user/:userId')
-    @ApiParam({ name: 'userId' })
+    @Post('/logout')
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getUser(@Param('userId') userId: number): Promise<User> {
-        const user = await this.userService.findOne(userId);
-        if (!user) {
-            throw new NotFoundException('The user does not exist');
-        }
-        return user;
+    async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
+        // res.clearCookie('token');
+        // res.clearCookie('idToken');
+        // res.clearCookie('userId');
+        req.logout();
+        res.redirect('/login', 303);
     }
 
     @Get('/register')
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getPageRegister(@Res() res: Response): Promise<void> {
-        res.render('register', {
-            title: 'Register',
-            layout: 'authorization',
-            registerLink: false,
+    async getPageRegister(@Req() req: AuthenticatedRequest, @Res() res: Response): Promise<void> {
+        return toPresentation({
+            req,
+            res,
+            data: { registerLink: false },
+            render: {
+                viewName: 'register',
+                options: {
+                    title: 'Register',
+                    layout: 'authorization',
+                    registerLink: false,
+                },
+            },
         });
     }
 
@@ -61,17 +82,29 @@ export class UserController {
     })
     @ApiCreatedResponse()
     @ApiNotFoundResponse()
-    async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<void> {
+    async register(
+        @Body() createUserDto: CreateUserDto,
+        @Req() req: AuthenticatedRequest,
+        @Res() res: Response,
+    ): Promise<void> {
         const user = await this.userService.findUserByEmail(createUserDto.email);
 
         if (user) {
-            res.render('register', {
-                title: 'Register',
-                layout: 'authorization',
-                error: 'This user is already registered',
+            return toPresentation({
+                req,
+                res,
+                data: { error: 'This user is already registered' },
+                render: {
+                    viewName: 'register',
+                    options: {
+                        title: 'Register',
+                        layout: 'authorization',
+                        error: 'This user is already registered',
+                    },
+                },
             });
         } else {
-            const hash = await this.authService.hashPassword(createUserDto);
+            const hash = await this.authService.hashPassword(createUserDto.password);
             await this.userService.create({
                 fullName: createUserDto.fullName,
                 nickname: createUserDto.nickname,
@@ -80,22 +113,18 @@ export class UserController {
                 email: createUserDto.email,
                 password: hash,
             });
-            res.render('login', {
-                title: 'Login',
-                layout: 'authorization',
+            return toPresentation({
+                req,
+                res,
+                data: { message: 'Registration completed successfully' },
+                render: {
+                    viewName: 'login',
+                    options: {
+                        title: 'Login',
+                        layout: 'authorization',
+                    },
+                },
             });
         }
-    }
-
-    @Put('/user/:userId')
-    @ApiParam({ name: 'userId' })
-    @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
-        const updatedUser = await this.userService.update(userId, updateUserDto);
-        if (!updatedUser) {
-            throw new NotFoundException('The user does not update');
-        }
-        return updatedUser;
     }
 }

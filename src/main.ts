@@ -5,12 +5,16 @@ import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import * as session from 'express-session';
+import flash = require('connect-flash');
 import * as hbs from 'express-handlebars';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Logger } from 'src/logger/logger.service';
+import { ConfigService } from '@nestjs/config';
+import * as passport from 'passport';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const configService = app.get<ConfigService>(ConfigService);
 
     const logger = app.get<Logger>(Logger);
     app.useLogger(logger);
@@ -31,24 +35,38 @@ async function bootstrap() {
         }),
     );
 
-    app.use(session({ secret: process.env.JWT_SECRET as string }));
+    // app.use(session({ secret: configService.get('JWT_SECRET') as string }));
+
+    app.use(
+        session({
+            secret: configService.get('SESSION_SECRET') as string,
+            resave: false,
+            saveUninitialized: false,
+            // cookie: { maxAge: 3600000 },
+        }),
+    );
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(flash());
 
     const options = new DocumentBuilder()
         .setTitle('INSTAGRAM')
         .setVersion('1.0')
-        .setDescription(process.env.DESCRIPTION_FOR_SWAGGER as string)
+        .setDescription(
+            'There is analog project Instagram. Technologies used: Node.js, Nest.js, MySQL, TypeORM',
+        )
         .setContact(
-            process.env.NAME_AUTHOR as string,
-            process.env.APP_URL_SWAGGER as string,
-            process.env.EMAIL_AUTHOR as string,
+            'Anastasiya Septilko',
+            configService.get('APP_URL_SWAGGER') as string,
+            'anastasiyaseptilko@gmail.com',
         )
         .build();
 
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('api', app, document);
 
-    await app.listen(Number(process.env.APP_PORT));
-    logger.log(`Server run: ${process.env.APP_URL}`);
-    logger.log(`Swagger documentation: ${process.env.APP_URL_SWAGGER}`);
+    await app.listen(configService.get('APP_PORT') as number);
+    logger.log(`Server run: ${configService.get('APP_URL')}`);
+    logger.log(`Swagger documentation: ${configService.get('APP_URL_SWAGGER')}`);
 }
 bootstrap();

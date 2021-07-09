@@ -17,18 +17,18 @@
     </div>
 {{/if}}
 
-{{#if isAllowViewLikesCount}}
-    <div style='padding: 1rem'>
-        <button type="button" class="btn btn-outline-dark btn-sm" onclick='getLikes({{id}})'>See the number of likes under this photo</button>
-    </div>
-    <div style='padding: 1rem' id='countLikes-{{id}}'></div>
-{{/if}}
-
 <div class="card-body">
     <p class="card-text"><strong>Description to the photo: </strong>{{caption}}</p>
 </div>
 
-{{#if isProfilePage}}
+{{#if isAllowViewLikesCountAndComments}}
+    <div style='padding: 1rem'>
+        <button type="button" class="btn btn-outline-dark btn-sm" onclick='getLikes({{id}})'>See the number of likes
+            under this photo
+        </button>
+    </div>
+    <div style='padding: 1rem' id='countLikes-{{id}}'></div>
+
     <div class="card-body">
         <form action="/api/comment/{{id}}" method="post" style="" target="hiddenFrame">
             <div>
@@ -39,7 +39,9 @@
         <br>
         <a href="/api/comment/{{id}}" class="btn btn-primary">Get comments</a>
     </div>
+
 {{/if}}
+
 <hr>
 
 {{#if isAllowLiked}}

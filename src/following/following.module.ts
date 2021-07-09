@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FollowingEntity } from 'src/repositories/following.entity';
+import { FollowingEntity } from 'src/following/dal/following.entity';
 import { FollowingService } from 'src/following/following.service';
 import { FollowingController } from 'src/following/following.controller';
 import { FollowingRepository } from 'src/following/dal/following.repository';

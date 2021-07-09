@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IsNumber } from 'class-validator';
-import { UsersEntity } from './users.entity';
+import { UsersEntity } from '../../user/dal/users.entity';
 
 @Entity({ name: 'following' })
 export class FollowingEntity {

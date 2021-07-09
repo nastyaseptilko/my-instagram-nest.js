@@ -1,9 +1,9 @@
 function resultSearch() {
     let search = document.getElementsByName('search')[0].value;
 
-    fetch(`/api/search?search=${search}`)
+    fetch(`/api/search?search=${search}`, { headers: { 'Content-Type': 'application/json' } })
         .then(response => response.json())
-        .then(search => {
+        .then(async search => {
             const listLinks = document.getElementsByName('link')[0];
             const textNoFound = document.getElementsByName('text')[0];
             listLinks.innerHTML = '';
@@ -17,7 +17,7 @@ function resultSearch() {
             const link = document.createElement('li');
 
             if (search) {
-                search.forEach(el => {
+                await search.forEach(el => {
                     const a = document.createElement('a');
                     const empty = document.createElement('p');
                     const buttonFollow = document.createElement('button');
@@ -92,7 +92,7 @@ function unfollow(followingId) {
 }
 
 async function getLikes(photoId) {
-    await fetch(`/api/likes/${photoId}`)
+    await fetch(`/api/likes/${photoId}`, { headers: { 'Content-Type': 'application/json' } })
         .then(response => response.json())
         .then(response => {
             const div = document.getElementById(`countLikes-${photoId}`);

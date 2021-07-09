@@ -1,4 +1,5 @@
 import {
+    ApiBadRequestResponse,
     ApiCreatedResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
@@ -6,6 +7,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -16,17 +18,22 @@ import {
     Req,
     Res,
     UploadedFile,
+    UseFilters,
+    UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { PhotoService } from 'src/photo/photo.service';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
+import { AuthenticatedRequest } from 'src/auth/interfaces/auth.middleware.interfaces';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePhotoDto } from 'src/photo/dto/create.photo.dto';
 import { UpdatePhotoDto } from 'src/photo/dto/update.photo.dto';
+import { toPresentation } from '../presentation.response';
+import { AuthenticatedGuard } from '../auth/common/guards/authenticated.guard';
+import { AuthExceptionFilter } from '../auth/common/filters/auth.exceptions.filter';
 
 const storage = {
     storage: diskStorage({
@@ -42,31 +49,53 @@ const storage = {
 
 @ApiTags('Photo')
 @Controller('/api')
+@UseFilters(AuthExceptionFilter)
 export class PhotoController {
     constructor(private readonly photoService: PhotoService) {}
 
     @Get('/photo')
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async getPagePhoto(@Res() res: Response): Promise<void> {
-        res.render('photo', {
-            title: 'Photo',
-            layout: 'photos',
-            viewForm: false,
+    async getPagePhoto(@Req() req: AuthenticatedRequest, @Res() res: Response): Promise<void> {
+        return toPresentation({
+            req,
+            res,
+            data: { viewForm: false },
+            render: {
+                viewName: 'photo',
+                options: {
+                    title: 'Photo',
+                    layout: 'photos',
+                    viewForm: false,
+                },
+            },
         });
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Get('/photos')
     @ApiOkResponse()
     @ApiNotFoundResponse()
     async getPhotos(@Req() req: AuthenticatedRequest, @Res() res: Response): Promise<void> {
-        const photos = await this.photoService.findAllPhotos(req.user.id);
-        res.render('photos', {
-            title: 'Photos',
-            layout: 'photos',
-            photos: photos,
-            isAllowedToGoToProfile: true,
-            isAllowLiked: true,
+        const photos = await this.photoService.findPublishersAndPersonalPhotos(req.user.id);
+        return toPresentation({
+            req,
+            res,
+            data: {
+                photos: photos,
+                isAllowedToGoToProfile: true,
+                isAllowLiked: true,
+            },
+            render: {
+                viewName: 'photos',
+                options: {
+                    title: 'Photos',
+                    layout: 'photos',
+                    photos: photos,
+                    isAllowedToGoToProfile: true,
+                    isAllowLiked: true,
+                },
+            },
         });
     }
 
@@ -88,10 +117,18 @@ export class PhotoController {
                 caption: createPhotoDto.caption,
             });
         } else {
-            res.render('photo', {
-                title: 'Photo',
-                layout: 'photos',
-                error: 'You did not choose file',
+            return toPresentation({
+                req,
+                res,
+                data: { error: 'You did not choose file' },
+                render: {
+                    viewName: 'photo',
+                    options: {
+                        title: 'Photo',
+                        layout: 'photos',
+                        error: 'You did not choose file',
+                    },
+                },
             });
         }
     }
@@ -99,19 +136,35 @@ export class PhotoController {
     @Put('photo/:photoId')
     @ApiParam({ name: 'photoId' })
     @ApiOkResponse()
-    @ApiNotFoundResponse()
+    @ApiBadRequestResponse()
     async updatePhoto(
         @Param('photoId') photoId: number,
+        @Req() req: AuthenticatedRequest,
         @Body() updatePhotoDto: UpdatePhotoDto,
     ): Promise<void> {
-        await this.photoService.update(photoId, updatePhotoDto);
+        const photo = await this.photoService.findPhoto(photoId);
+
+        if (photo && req.user.id === photo.userId) {
+            await this.photoService.update(photoId, updatePhotoDto);
+        } else {
+            throw new BadRequestException('You have no way to update the photo');
+        }
     }
 
     @Delete('photo/:photoId')
     @ApiParam({ name: 'photoId' })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async deletePhoto(@Param('photoId') photoId: number): Promise<void> {
-        await this.photoService.delete(photoId);
+    async deletePhoto(
+        @Param('photoId') photoId: number,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<void> {
+        const photo = await this.photoService.findPhoto(photoId);
+
+        if (photo && req.user.id === photo.userId) {
+            await this.photoService.delete(photoId);
+        } else {
+            throw new BadRequestException('You have no way to delete the photo');
+        }
     }
 }

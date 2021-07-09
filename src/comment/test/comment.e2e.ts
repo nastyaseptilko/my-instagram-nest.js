@@ -1,29 +1,19 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { PhotosEntity } from 'src/repositories/photos.entity';
-import { FollowingEntity } from 'src/repositories/following.entity';
+import { ConfigService } from '@nestjs/config';
+import { UsersEntity } from 'src/user/dal/users.entity';
+import { PhotosEntity } from 'src/photo/dal/photos.entity';
 import { UserService } from 'src/user/user.service';
-import * as cookieParser from 'cookie-parser';
-import * as hbs from 'express-handlebars';
-import { join } from 'path';
 import * as jwt from 'jsonwebtoken';
-import * as session from 'express-session';
-import { ValidationPipe } from '@nestjs/common';
-import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as request from 'supertest';
-import { CommentsEntity } from 'src/repositories/comments.entity';
+import { CommentsEntity } from 'src/comment/dal/comments.entity';
 import { CommentController } from 'src/comment/comment.controller';
 import { CommentService } from 'src/comment/comment.service';
-import { LikesEntity } from 'src/repositories/likes.entity';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
-import { NextFunction, Response } from 'express';
 import { Repository } from 'typeorm';
 import { PhotoModule } from 'src/photo/photo.module';
 import { UserRepository } from 'src/user/dal/user.repository';
 import { CommentRepository } from 'src/comment/dal/comment.repository';
+import { createTestingApplication, createTestingModule } from 'src/app.e2e';
+import { EmailService } from 'src/email/email.service';
 
 describe('Comment', () => {
     let app: NestExpressApplication;
@@ -31,57 +21,22 @@ describe('Comment', () => {
     let userRepository: Repository<UsersEntity>;
     let photoRepository: Repository<PhotosEntity>;
     let commentRepository: Repository<CommentsEntity>;
+    const configService = new ConfigService();
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                ConfigModule.forRoot({
-                    envFilePath: '.env',
-                }),
-                TypeOrmModule.forFeature([UsersEntity, CommentsEntity]),
-                PhotoModule,
-                TypeOrmModule.forRoot({
-                    type: 'mysql',
-                    host: 'localhost',
-                    port: 3306,
-                    username: 'root',
-                    password: 'root',
-                    database: 'instagram_test',
-                    entities: [
-                        UsersEntity,
-                        PhotosEntity,
-                        FollowingEntity,
-                        CommentsEntity,
-                        LikesEntity,
-                    ],
-                    synchronize: true,
-                }),
-            ],
-            providers: [UserRepository, UserService, CommentRepository, CommentService],
-            controllers: [CommentController],
-        }).compile();
-        app = module.createNestApplication<NestExpressApplication>();
-
-        app.set('view engine', 'hbs');
-        app.engine(
-            'hbs',
-            hbs({
-                extname: 'hbs',
-                layoutsDir: join(__dirname, '../../../', 'views/layouts'),
-                partialsDir: join(__dirname, '../../../', 'views/partials'),
-            }),
-        );
-        app.use(session({ secret: process.env.JWT_SECRET as string }));
-
-        app.useGlobalPipes(new ValidationPipe());
-        app.use(cookieParser());
-        app.use('/api', (req: AuthenticatedRequest, res: Response, next: NextFunction) =>
-            new AuthMiddleware().use(req, res, next),
+        const module = await createTestingModule(
+            [UsersEntity, CommentsEntity],
+            [PhotoModule],
+            [UserRepository, UserService, CommentRepository, EmailService, CommentService],
+            [CommentController],
         );
 
-        await app.init();
+        app = await createTestingApplication(
+            module.createNestApplication<NestExpressApplication>(),
+            configService,
+        );
 
-        token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+        token = jwt.sign({ user: { id: 1 } }, configService.get('JWT_SECRET') as string);
 
         userRepository = module.get('UsersEntityRepository');
         photoRepository = module.get('PhotosEntityRepository');

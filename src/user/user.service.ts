@@ -6,10 +6,6 @@ import { UserRepository } from 'src/user/dal/user.repository';
 export class UserService {
     constructor(private userRepository: UserRepository) {}
 
-    async findUsers(): Promise<User[]> {
-        return await this.userRepository.find();
-    }
-
     async findUsersByEmails(emails: string[]): Promise<User[]> {
         if (emails.length === 0) {
             return [];
@@ -17,8 +13,8 @@ export class UserService {
         return await this.userRepository.findUsersByEmails(emails);
     }
 
-    async findOne(userId: number): Promise<User | undefined> {
-        return await this.userRepository.findOne(userId);
+    async findUser(userId: number): Promise<User | undefined> {
+        return await this.userRepository.findUser(userId);
     }
 
     async findUserByEmail(email: string): Promise<User | undefined> {
