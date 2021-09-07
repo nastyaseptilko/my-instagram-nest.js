@@ -1,11 +1,30 @@
-import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, NotFoundException, Param, Put, Req, Res } from '@nestjs/common';
+import {
+    ApiBadRequestResponse,
+    ApiNotFoundResponse,
+    ApiOkResponse,
+    ApiParam,
+    ApiTags,
+} from '@nestjs/swagger';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    NotFoundException,
+    Param,
+    Put,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { PhotoService } from 'src/photo/photo.service';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
+import { AuthenticatedRequest } from 'src/auth/interfaces/auth.middleware.interfaces';
 import { Response } from 'express';
 import { UpdateUserDto } from 'src/user/dto/update.user.dto';
 import { FollowingService } from 'src/following/following.service';
+import { toPresentation } from 'src/presentation.response';
+import { AuthenticatedGuard } from '../auth/common/guards/authenticated.guard';
 
 @ApiTags('Profile')
 @Controller('/api')
@@ -16,6 +35,7 @@ export class UserProfileController {
         private readonly followingService: FollowingService,
     ) {}
 
+    @UseGuards(AuthenticatedGuard)
     @Get('/profile/:userId?')
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
@@ -26,22 +46,19 @@ export class UserProfileController {
         @Param('userId') userId?: number,
     ): Promise<void> {
         const targetUserId = userId || req.user.id;
-        const user = await this.userService.findOne(targetUserId);
+        const user = await this.userService.findUser(targetUserId);
         const publishers = await this.followingService.findPublishers(req.user.id);
         const subscribers = await this.followingService.findSubscribers(req.user.id);
 
         if (user) {
-            const photos = await this.photoService.findAll(targetUserId);
+            const photos = await this.photoService.findPhotos(targetUserId);
             const renderOptions = {
                 title: 'Profile',
                 layout: 'profile',
                 user: user,
                 isOwnProfile: req.user.id === targetUserId,
-                isAllowViewPublishers: publishers,
-                isProfilePage: true,
                 isAllowedToGoToProfile: false,
-                isAllowViewSubscribers: subscribers,
-                isAllowViewLikesCount: true,
+                isAllowViewLikesCountAndComments: true,
                 publishers,
                 subscribers,
                 message: '',
@@ -50,21 +67,43 @@ export class UserProfileController {
             if (!photos) {
                 renderOptions.message = 'You do not have photos';
             }
-            res.render('profile', renderOptions);
+            return toPresentation({
+                req,
+                res,
+                data: {
+                    user: user,
+                    isOwnProfile: req.user.id === targetUserId,
+                    isAllowedToGoToProfile: false,
+                    isAllowViewLikesCountAndComments: true,
+                    publishers,
+                    subscribers,
+                    message: '',
+                    photos,
+                },
+                render: {
+                    viewName: 'profile',
+                    options: renderOptions,
+                },
+            });
         } else {
             throw new NotFoundException('User does not exist');
         }
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Put('/profile/:userId')
     @ApiParam({ name: 'userId' })
     @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async updateUser(@Body() updateUserDto: UpdateUserDto, @Param('userId') userId: number) {
-        const updatedUser = await this.userService.update(userId, updateUserDto);
-        if (!updatedUser) {
-            throw new NotFoundException('The user does not exist');
+    @ApiBadRequestResponse()
+    async updateUser(
+        @Req() req: AuthenticatedRequest,
+        @Body() updateUserDto: UpdateUserDto,
+        @Param('userId') userId: number,
+    ) {
+        if (req.user.id === userId) {
+            await this.userService.update(userId, updateUserDto);
+        } else {
+            throw new BadRequestException('You have no way to update user profile');
         }
-        return updatedUser;
     }
 }

@@ -4,7 +4,7 @@ import { UserService } from 'src/user/user.service';
 import { GoogleLoginResult } from 'src/auth/interfaces/auth.interfaces';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthenticatedRequestViaGoogle } from 'src/middlewares/interfaces/auth.middleware.interfaces';
+import { AuthenticatedRequestViaGoogle } from 'src/auth/interfaces/auth.middleware.interfaces';
 
 @ApiTags('Google auth')
 @Controller('/auth/google')

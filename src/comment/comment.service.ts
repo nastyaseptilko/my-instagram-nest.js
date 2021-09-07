@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
+    Comment,
     CommentWithUser,
     CreateCommentPayload,
     ReplaceEmailsParams,
     UpdateCommentPayload,
 } from 'src/comment/interfaces/comment.interfaces';
 import { UserService } from 'src/user/user.service';
-import { CommentAndUserFieldsFromDatabase } from 'src/comment/dal/comment.repository.interfaces';
 import { CommentRepository } from 'src/comment/dal/comment.repository';
 
 @Injectable()
@@ -17,14 +17,11 @@ export class CommentService {
     ) {}
 
     async findComments(photoId: number): Promise<CommentWithUser[]> {
-        const comments = await this.commentRepository.findAllComments(photoId);
+        return await this.commentRepository.findComments(photoId);
+    }
 
-        return comments.map((comment: CommentAndUserFieldsFromDatabase) => ({
-            commentId: comment.comments_comment_id,
-            text: comment.comments_text,
-            nickname: comment.u_nickname,
-            userId: comment.u_user_id,
-        }));
+    async findComment(commentId: number): Promise<Comment | undefined> {
+        return await this.commentRepository.findComment(commentId);
     }
 
     async create(createCommentPayload: CreateCommentPayload): Promise<void> {

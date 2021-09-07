@@ -1,43 +1,37 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Render,
+    Req,
+    Res,
+    Session,
+    UseFilters,
+    UseGuards,
+} from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { LoginUserDto } from 'src/auth/dto/login.user.dto';
-import { User } from 'src/user/interfaces/user.interfaces';
-import * as jwt from 'jsonwebtoken';
 import { Logger } from 'src/logger/logger.service';
+import { ConfigService } from '@nestjs/config';
+import { AuthExceptionFilter } from './common/filters/auth.exceptions.filter';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedRequest } from './interfaces/auth.middleware.interfaces';
+import { toPresentation } from '../presentation.response';
 
 @ApiTags('Auth')
 @Controller('/')
+@UseFilters(AuthExceptionFilter)
 export class AuthController {
     constructor(
         private readonly logger: Logger,
-        private readonly userService: UserService,
+        private readonly configService: ConfigService,
         private readonly authService: AuthService,
     ) {}
 
-    @Get('/login')
-    @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async getPageLogin(@Res() res: Response): Promise<void> {
-        res.render('login', {
-            title: 'Login',
-            layout: 'authorization',
-            registerLink: true,
-        });
-    }
-
-    @Get('/logout')
-    @ApiOkResponse()
-    @ApiNotFoundResponse()
-    async logout(@Res() res: Response): Promise<void> {
-        res.clearCookie('token');
-        res.clearCookie('idToken');
-        res.clearCookie('userId');
-        res.redirect('/login');
-    }
-
+    @UseGuards(AuthGuard('local'))
     @Post('/login')
     @ApiOperation({
         summary: 'Login to the system.',
@@ -46,37 +40,78 @@ export class AuthController {
     })
     @ApiOkResponse()
     @ApiNotFoundResponse()
-    async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<void> {
-        const user = await this.authService.verifyPassword(loginUserDto);
-
-        if (user) {
-            try {
-                const token = await generateAccessToken(
-                    { user: user },
-                    process.env.JWT_SECRET as jwt.Secret,
-                );
-                res.cookie('token', token);
-            } catch (e) {
-                this.logger.error('Generate token error', e.trace);
-            } finally {
-                res.redirect('/');
-            }
-        } else {
-            res.render('login', {
-                title: 'Login',
-                layout: 'authorization',
-                error: 'Invalid email or password',
-            });
-            res.status(400);
-        }
-    }
-}
-
-export function generateAccessToken(user: { user?: User }, secret: jwt.Secret): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        jwt.sign(user, secret, (err, token) => {
-            if (token) resolve(token);
-            else reject(err);
+    async login(
+        @Body() loginUserDto: LoginUserDto,
+        @Req() req: AuthenticatedRequest,
+        @Res() res: Response,
+        // @Session() session: any,
+    ): Promise<void> {
+        console.log(req.user.id, 'id');
+        console.log(req.user, 'user');
+        // res.redirect('/home');
+        return toPresentation({
+            req,
+            res,
+            data: { message: 'Login was successful' },
+            render: {
+                viewName: 'home',
+                options: {
+                    title: 'Instagram',
+                    layout: 'home',
+                },
+            },
         });
-    });
+        // const user: User | null = await this.authService.validateUser(loginUserDto);
+        //
+        // if (user) {
+        //     return toPresentation({
+        //         req,
+        //         res,
+        //         data: { message: 'Login was successful' },
+        //         render: {
+        //             viewName: 'home',
+        //             options: {
+        //                 title: 'Instagram',
+        //                 layout: 'homePage',
+        //             },
+        //         },
+        //     });
+        //     // try {
+        //     //     // const token = await generateAccessToken(
+        //     //     //     { user },
+        //     //     //     this.configService.get('JWT_SECRET') as jwt.Secret,
+        //     //     // );
+        //     //     // res.cookie('token', token);
+        //     // } catch (e) {
+        //     //     // this.logger.error('Generate token error', e.trace);
+        //     // } finally {
+        //     //     toPresentation({
+        //     //         req,
+        //     //         res,
+        //     //         data: { message: 'Login was successful' },
+        //     //         render: {
+        //     //             viewName: 'home',
+        //     //             options: {
+        //     //                 title: 'Instagram',
+        //     //                 layout: 'homePage',
+        //     //             },
+        //     //         },
+        //     //     });
+        //     // }
+        // } else {
+        //     toPresentation({
+        //         req,
+        //         res,
+        //         data: { error: 'Invalid email or password' },
+        //         render: {
+        //             viewName: 'login',
+        //             options: {
+        //                 title: 'Login',
+        //                 layout: 'authorization',
+        //                 error: 'Invalid email or password',
+        //             },
+        //         },
+        //     });
+        // }
+    }
 }

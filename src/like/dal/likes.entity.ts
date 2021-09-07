@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { PhotosEntity } from 'src/repositories/photos.entity';
+import { UsersEntity } from 'src/user/dal/users.entity';
+import { PhotosEntity } from 'src/photo/dal/photos.entity';
 import { IsNumber } from 'class-validator';
 
 @Entity({ name: 'likes' })
@@ -20,7 +20,10 @@ export class LikesEntity {
     @JoinColumn({ name: 'user_id' })
     user!: UsersEntity;
 
-    @ManyToOne(() => PhotosEntity, photo => photo.id)
+    @ManyToOne(() => PhotosEntity, photo => photo.id, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     @JoinColumn({ name: 'photo_id' })
     photo!: PhotosEntity;
 }

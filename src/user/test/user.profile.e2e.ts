@@ -1,20 +1,8 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { PhotosEntity } from 'src/repositories/photos.entity';
-import { FollowingEntity } from 'src/repositories/following.entity';
-import { CommentsEntity } from 'src/repositories/comments.entity';
-import { LikesEntity } from 'src/repositories/likes.entity';
-import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import * as hbs from 'express-handlebars';
-import { join } from 'path';
-import * as session from 'express-session';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
-import { NextFunction, Response } from 'express';
-import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import { ConfigService } from '@nestjs/config';
+import { UsersEntity } from 'src/user/dal/users.entity';
+import { PhotosEntity } from 'src/photo/dal/photos.entity';
+import { FollowingEntity } from 'src/following/dal/following.entity';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from 'src/user/user.service';
 import * as request from 'supertest';
@@ -22,10 +10,11 @@ import { Repository } from 'typeorm';
 import { UserRepository } from 'src/user/dal/user.repository';
 import { PhotoRepository } from 'src/photo/dal/photo.repository';
 import { FollowingRepository } from 'src/following/dal/following.repository';
-import { AuthService } from 'src/auth/auth.service';
 import { PhotoService } from 'src/photo/photo.service';
 import { FollowingService } from 'src/following/following.service';
 import { UserProfileController } from 'src/user/user.profile.controller';
+import { createTestingApplication, createTestingModule } from 'src/app.e2e';
+import { UserModule } from 'src/user/user.module';
 
 describe('User profile', () => {
     let app: NestExpressApplication;
@@ -33,65 +22,29 @@ describe('User profile', () => {
     let userRepository: Repository<UsersEntity>;
     let photoRepository: Repository<PhotosEntity>;
     let followingRepository: Repository<FollowingEntity>;
+    const configService = new ConfigService();
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                ConfigModule.forRoot({
-                    envFilePath: '.env',
-                }),
-                TypeOrmModule.forFeature([UsersEntity, PhotosEntity, FollowingEntity]),
-                TypeOrmModule.forRoot({
-                    type: 'mysql',
-                    host: 'localhost',
-                    port: 3306,
-                    username: 'root',
-                    password: 'root',
-                    database: 'instagram_test',
-                    entities: [
-                        UsersEntity,
-                        PhotosEntity,
-                        FollowingEntity,
-                        CommentsEntity,
-                        LikesEntity,
-                    ],
-                    synchronize: true,
-                }),
-            ],
-            providers: [
+        const module = await createTestingModule(
+            [UsersEntity, PhotosEntity, FollowingEntity],
+            [UserModule],
+            [
                 UserRepository,
                 PhotoRepository,
                 FollowingRepository,
                 UserService,
-                AuthService,
                 PhotoService,
                 FollowingService,
             ],
-            controllers: [UserProfileController],
-        }).compile();
-        app = module.createNestApplication<NestExpressApplication>();
-
-        app.useGlobalPipes(new ValidationPipe());
-        app.use(cookieParser());
-
-        app.set('view engine', 'hbs');
-        app.engine(
-            'hbs',
-            hbs({
-                extname: 'hbs',
-                layoutsDir: join(__dirname, '../../../', 'views/layouts'),
-                partialsDir: join(__dirname, '../../../', 'views/partials'),
-            }),
-        );
-        app.use(session({ secret: process.env.JWT_SECRET as string }));
-
-        app.use('/api', (req: AuthenticatedRequest, res: Response, next: NextFunction) =>
-            new AuthMiddleware().use(req, res, next),
+            [UserProfileController],
         );
 
-        await app.init();
+        app = await createTestingApplication(
+            module.createNestApplication<NestExpressApplication>(),
+            configService,
+        );
 
-        token = jwt.sign({ user: { id: 1 } }, process.env.JWT_SECRET as string);
+        token = jwt.sign({ user: { id: 1 } }, configService.get('JWT_SECRET') as string);
 
         userRepository = module.get('UsersEntityRepository');
         photoRepository = module.get('PhotosEntityRepository');

@@ -18,6 +18,12 @@
 <div>
     {{{body}}}
 </div>
-
+<script>
+    function logout() {
+        fetch(`/logout`, { method: 'POST', redirect: 'follow'}).then(
+            response => (window.location.href = response.url),
+        );
+    }
+</script>
 </body>
 </html>

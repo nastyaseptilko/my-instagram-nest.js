@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
+import { UsersEntity } from 'src/user/dal/users.entity';
 import { Repository } from 'typeorm';
 import { CreateUserPayload, UpdateUserPayload, User } from 'src/user/interfaces/user.interfaces';
 
@@ -11,10 +11,6 @@ export class UserRepository {
         private userRepository: Repository<UsersEntity>,
     ) {}
 
-    async find(): Promise<User[]> {
-        return await this.userRepository.find();
-    }
-
     async findUsersByEmails(emails: string[]): Promise<User[]> {
         return await this.userRepository
             .createQueryBuilder('users')
@@ -22,7 +18,7 @@ export class UserRepository {
             .getMany();
     }
 
-    async findOne(userId: number): Promise<User | undefined> {
+    async findUser(userId: number): Promise<User | undefined> {
         return await this.userRepository.findOne(userId);
     }
 

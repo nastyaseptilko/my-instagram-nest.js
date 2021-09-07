@@ -1,81 +1,29 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/repositories/users.entity';
-import { PhotosEntity } from 'src/repositories/photos.entity';
-import { FollowingEntity } from 'src/repositories/following.entity';
-import { CommentsEntity } from 'src/repositories/comments.entity';
-import { LikesEntity } from 'src/repositories/likes.entity';
+import { UsersEntity } from 'src/user/dal/users.entity';
 import { UserService } from 'src/user/user.service';
 import { UserController } from 'src/user/user.controller';
-import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import * as hbs from 'express-handlebars';
-import { join } from 'path';
-import * as session from 'express-session';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
-import { NextFunction, Response } from 'express';
-import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import * as request from 'supertest';
 import { Repository } from 'typeorm';
 import { UserRepository } from 'src/user/dal/user.repository';
 import { AuthService } from 'src/auth/auth.service';
 import { UserModule } from 'src/user/user.module';
+import { createTestingApplication, createTestingModule } from 'src/app.e2e';
 
 describe('User', () => {
     let app: NestExpressApplication;
     let userRepository: Repository<UsersEntity>;
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                ConfigModule.forRoot({
-                    envFilePath: '.env',
-                }),
-                TypeOrmModule.forFeature([UsersEntity]),
-                UserModule,
-                TypeOrmModule.forRoot({
-                    type: 'mysql',
-                    host: 'localhost',
-                    port: 3306,
-                    username: 'root',
-                    password: 'root',
-                    database: 'instagram_test',
-                    entities: [
-                        UsersEntity,
-                        PhotosEntity,
-                        FollowingEntity,
-                        CommentsEntity,
-                        LikesEntity,
-                    ],
-                    synchronize: true,
-                }),
-            ],
-            providers: [UserRepository, AuthService, UserService],
-            controllers: [UserController],
-        }).compile();
-        app = module.createNestApplication<NestExpressApplication>();
-
-        app.useGlobalPipes(new ValidationPipe());
-        app.use(cookieParser());
-
-        app.set('view engine', 'hbs');
-        app.engine(
-            'hbs',
-            hbs({
-                extname: 'hbs',
-                layoutsDir: join(__dirname, '../../../', 'views/layouts'),
-                partialsDir: join(__dirname, '../../../', 'views/partials'),
-            }),
-        );
-        app.use(session({ secret: process.env.JWT_SECRET as string }));
-
-        app.use('/api', (req: AuthenticatedRequest, res: Response, next: NextFunction) =>
-            new AuthMiddleware().use(req, res, next),
+        const module = await createTestingModule(
+            [UsersEntity],
+            [UserModule],
+            [UserRepository, AuthService, UserService],
+            [UserController],
         );
 
-        await app.init();
+        app = await createTestingApplication(
+            module.createNestApplication<NestExpressApplication>(),
+        );
 
         userRepository = module.get('UsersEntityRepository');
 
@@ -106,9 +54,15 @@ describe('User', () => {
         await app.close();
     });
 
+    it(`should display login page`, async () => {
+        const result = await request(app.getHttpServer()).get('/login');
+
+        expect(result.status).toBe(200);
+        expect(result.type).toEqual('text/html');
+    });
+
     it(`GET users`, async () => {
         const result = await request(app.getHttpServer()).get('/users');
-        // .set('Cookie', `token=${token};`);
 
         expect(result.status).toBe(200);
         expect(result.type).toBe('application/json');

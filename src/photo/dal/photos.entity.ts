@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { UsersEntity } from 'src/repositories/users.entity';
+import { UsersEntity } from 'src/user/dal/users.entity';
 
 @Entity({ name: 'photos' })
 export class PhotosEntity {

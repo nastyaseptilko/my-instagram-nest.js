@@ -1,8 +1,10 @@
 import { ApiNotFoundResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Query, Req } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { SearchService } from './search.service';
+import { Response } from 'express';
 import { User } from 'src/user/interfaces/user.interfaces';
-import { AuthenticatedRequest } from 'src/middlewares/interfaces/auth.middleware.interfaces';
+import { AuthenticatedRequest } from 'src/auth/interfaces/auth.middleware.interfaces';
+import { toPresentation } from '../presentation.response';
 
 @ApiTags('Search source')
 @Controller('/api')
