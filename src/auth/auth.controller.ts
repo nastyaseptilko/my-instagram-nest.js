@@ -12,19 +12,14 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
-import { Response } from 'express';
-import { Request } from 'express';
+import { Response, Request } from 'express';
 import { LoginUserDto } from 'src/auth/dto/login.user.dto';
-import * as jwt from 'jsonwebtoken';
 import { Logger } from 'src/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
-import { generateAccessToken } from 'src/auth/auth.middleware';
-import { User } from 'src/user/interfaces/user.interfaces';
-import { toPresentation } from 'src/presentation.response';
-import { AuthenticatedRequest } from 'src/auth/interfaces/auth.middleware.interfaces';
-import { LoginGuard } from 'src/auth/common/guards/login.guard';
 import { AuthExceptionFilter } from './common/filters/auth.exceptions.filter';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedRequest } from './interfaces/auth.middleware.interfaces';
+import { toPresentation } from '../presentation.response';
 
 @ApiTags('Auth')
 @Controller('/')
@@ -35,12 +30,6 @@ export class AuthController {
         private readonly configService: ConfigService,
         private readonly authService: AuthService,
     ) {}
-
-    @Get('/')
-    @Render('login')
-    index(@Req() req: Request): { message: string[] } {
-        return { message: req.flash('loginError') };
-    }
 
     @UseGuards(AuthGuard('local'))
     @Post('/login')
@@ -53,23 +42,25 @@ export class AuthController {
     @ApiNotFoundResponse()
     async login(
         @Body() loginUserDto: LoginUserDto,
-        @Req() req: Request,
+        @Req() req: AuthenticatedRequest,
         @Res() res: Response,
         // @Session() session: any,
     ): Promise<void> {
-        res.redirect('/home');
-        // return toPresentation({
-        //     req,
-        //     res,
-        //     data: { message: 'Login was successful' },
-        //     render: {
-        //         viewName: 'home',
-        //         options: {
-        //             title: 'Instagram',
-        //             layout: 'home',
-        //         },
-        //     },
-        // });
+        console.log(req.user.id, 'id');
+        console.log(req.user, 'user');
+        // res.redirect('/home');
+        return toPresentation({
+            req,
+            res,
+            data: { message: 'Login was successful' },
+            render: {
+                viewName: 'home',
+                options: {
+                    title: 'Instagram',
+                    layout: 'home',
+                },
+            },
+        });
         // const user: User | null = await this.authService.validateUser(loginUserDto);
         //
         // if (user) {

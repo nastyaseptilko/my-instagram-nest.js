@@ -34,6 +34,7 @@ import { UpdatePhotoDto } from 'src/photo/dto/update.photo.dto';
 import { toPresentation } from '../presentation.response';
 import { AuthenticatedGuard } from '../auth/common/guards/authenticated.guard';
 import { AuthExceptionFilter } from '../auth/common/filters/auth.exceptions.filter';
+import { AuthGuard } from '@nestjs/passport';
 
 const storage = {
     storage: diskStorage({
@@ -53,6 +54,7 @@ const storage = {
 export class PhotoController {
     constructor(private readonly photoService: PhotoService) {}
 
+    @UseGuards(AuthenticatedGuard)
     @Get('/photo')
     @ApiOkResponse()
     @ApiNotFoundResponse()
@@ -99,6 +101,7 @@ export class PhotoController {
         });
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Post('/photo/upload')
     @UseInterceptors(FileInterceptor('image', storage))
     @ApiCreatedResponse()
@@ -133,6 +136,7 @@ export class PhotoController {
         }
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Put('photo/:photoId')
     @ApiParam({ name: 'photoId' })
     @ApiOkResponse()
@@ -151,6 +155,7 @@ export class PhotoController {
         }
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Delete('photo/:photoId')
     @ApiParam({ name: 'photoId' })
     @ApiOkResponse()

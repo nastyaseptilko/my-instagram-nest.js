@@ -50,6 +50,16 @@ export class UserController {
         // res.clearCookie('token');
         // res.clearCookie('idToken');
         // res.clearCookie('userId');
+        // req.session.destroy(() => {
+        //     res.cookie(this.config.get("SESSION_NAME"), "", {
+        //         domain: this.config.get("SESSION_DOMAIN"),
+        //         path: "/",
+        //         httpOnly: true,
+        //         maxAge: 0,
+        //         expires: new Date(0)
+        //     })
+        //     res.end(),
+        // });
         req.logout();
         res.redirect('/login', 303);
     }

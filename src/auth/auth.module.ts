@@ -20,7 +20,7 @@ import { LocalStrategy } from './local.strategy';
         ConfigModule,
         UserModule,
         LoggerModule,
-        PassportModule,
+        PassportModule.register({ session: true }),
     ],
     providers: [
         UserRepository,
